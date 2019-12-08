@@ -1,0 +1,6 @@
+pandas
+jupyter
+plotly
+folium
+h3
+seaborn

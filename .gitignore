@@ -1,0 +1,21 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Distribution / packaging
+*.egg-info/
+
+# Mac OS-specific storage files
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Jupyter NB Checkpoints
+.ipynb_checkpoints/
+
+# DotEnv configuration
+.env
+
+# exclude raw data from source control 
+/data/raw
