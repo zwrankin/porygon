@@ -1,4 +1,5 @@
 import pandas as pd
+import json
 from pathlib import Path
 
 from folium_extensions.data.config import RAW_DATA_DIR
@@ -23,3 +24,9 @@ def load_chicago_traffic_accident_brands_by_h3():
     df_h3 = pd.DataFrame(df_brands.groupby('h3')[['count'] + vehicle_brands_top].sum())
 
     return df_h3
+
+
+def load_chicago_census_tract_boundaries():
+    with open(Path(RAW_DATA_DIR, 'chicago_census_tract_boundaries.json')) as f:
+        data = json.load(f)
+    return data

@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import json
 from dotenv import find_dotenv, load_dotenv
 from pathlib import Path
 from sodapy import Socrata
@@ -31,5 +32,13 @@ def download_chicago_traffic_accidents():
     df.to_csv(Path(RAW_DATA_DIR, 'chicago_traffic_crashes_people.csv'), index=False)
 
 
+def download_chicago_census_tract_boundaries():
+    """Download census tract shapefiles from https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-Census-Tracts-2010/5jrd-6zik"""
+    results = socrata_client.get("74p9-q2aq", limit = 1_000_000) 
+    with open(Path(RAW_DATA_DIR, 'chicago_census_tract_boundaries.json'), 'w') as f:
+        json.dump(results, f)
+
+
 if __name__ == "__main__":
     download_chicago_traffic_accidents()
+    download_chicago_census_tract_boundaries()
