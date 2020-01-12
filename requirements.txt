@@ -1,7 +1,7 @@
 pandas
 jupyter
 geojson
-shapely
+geopandas
 plotly
 folium
 h3
