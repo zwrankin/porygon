@@ -1,3 +1,4 @@
+import pandas as pd
 from h3 import h3
 from branca.element import Template, MacroElement
 
