@@ -6,7 +6,10 @@ from geojson import Feature, FeatureCollection
 from shapely.geometry import shape, Point, Polygon
 from h3 import h3
 import folium
-from copy import deepcopy
+import seaborn as sns
+from pandas.api.types import is_string_dtype, is_numeric_dtype
+
+from folium_extensions.h3 import add_h3_legend
 
 class PolygonDataFrame(GeoDataFrame):
     """
@@ -75,6 +78,66 @@ class PolygonDataFrame(GeoDataFrame):
             fill_color=fill_color,
             **kwargs
         ).add_to(m)
+
+        return m
+
+    def to_categorical_map(self, val_col: str, cat_col: str, m=None, color_key=None, **kwargs):
+        """
+        Make custom folium.GeoJson with categorical observations 
+        To add a layer to existing map, provide an instance of folium.Map
+        ----------
+        val_col : Name of column with values 
+        cat_col : Name of column with categorical values 
+        m : folium.Map object. If not provided, makes a new map with just the categorical map layer
+        Returns
+        -------
+        folium.Map with added layer 
+        """
+        # TODO - refactor this elsewhere
+        assert val_col in self.columns, f"val_col {val_col} not found in dataframe columns - {self.columns.tolist()}"
+        assert cat_col in self.columns, f"cat_col {cat_col} not found in dataframe columns - {self.columns.tolist()}"
+        assert is_numeric_dtype(self[val_col]), f'{val_col} is not numeric'
+        assert is_string_dtype(self[cat_col]), f'{cat_col} is not numeric'
+
+        categories = self[cat_col].unique()
+
+        if color_key is None: 
+            colors = sns.color_palette('deep', 10).as_hex() + sns.color_palette('bright', 10).as_hex()
+
+            if len(categories) > len(colors):
+                # TODO - log a warning that not all categories will display
+                # TODO - either explicitly map some to "OTHER", or sort categories and take first X of them, or repeat colors
+                pass 
+            
+            color_key = dict(zip(categories, colors))
+
+        # TODO - allow layering to self.map 
+        if m is None:
+            m = self._make_base_map()
+
+        def style_function(feature):
+            row = self.loc[feature['id']]
+            color = color_key[row[cat_col]] 
+            opacity = 0.7 
+            return {
+                'weight': 2,
+                'opacity': opacity,
+                'color': color,
+                'fillColor': color,
+                'fillOpacity': opacity, 
+            }
+
+        folium.GeoJson(
+            self.to_feature_collection(),
+            style_function=style_function,
+            tooltip=folium.features.GeoJsonTooltip(
+                fields=[cat_col, val_col],
+                # aliases=['Category', 'Value'],
+            ),
+            **kwargs
+        ).add_to(m)
+
+        m = add_h3_legend(m, color_key)
 
         return m
 
