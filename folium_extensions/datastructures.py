@@ -90,13 +90,14 @@ class PolygonDataFrame(GeoDataFrame):
         The features have 'id' fields that correspond to the 'id' index of the PolygonDataFrame.to_feature_dataframe
         """
         # NOTE - watch out for issues with non-numeric ids, I've seen folium reject them in choropleth. I think the dtypes between geojson 'id' and 'id' col need to match 
-        fc  = FeatureCollection([Feature(id = f['properties']['id'], geometry=f['geometry']) for f in self._to_geo()['features']])
+        fc  = FeatureCollection([Feature(id = f['id'], geometry=f['geometry'], properties=f['properties']) for f in self._to_geo()['features']])
         return fc
 
-    def to_feature_dataframe(self):
-        """Returns a pd.DataFrame with 'id' index that corresponds to the FeatureCollection ids of PolygonDataFrame.to_feature_collection()"""
-        df = pd.DataFrame(self.drop(columns='geometry').set_index('id'))
-        return df
+    # DEPRECATED - the index should already be 'id'. Since it inherits from pd.DataFrame all functionality should exist in self 
+    # def to_feature_dataframe(self):
+    #     """Returns a pd.DataFrame with 'id' index that corresponds to the FeatureCollection ids of PolygonDataFrame.to_feature_collection()"""
+    #     df = pd.DataFrame(self.drop(columns='geometry').set_index('id'))
+    #     return df
     
 
 
@@ -144,7 +145,7 @@ class AdminDataFrame(PolygonDataFrame):
         
         gpdf = pd.merge(df.reset_index(), boundaries, on='id') 
         
-        return AdminDataFrame(gpdf) 
+        return AdminDataFrame(gpdf.set_index('id')) 
     
 
 class H3DataFrame(PolygonDataFrame):
@@ -185,4 +186,4 @@ class H3DataFrame(PolygonDataFrame):
         else: 
             df = df.reset_index()
         df['geometry'] = df.id.apply(_h3_to_polygon)
-        return H3DataFrame(df) 
+        return H3DataFrame(df.set_index('id')) 
