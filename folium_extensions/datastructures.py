@@ -5,7 +5,7 @@ from geopandas import GeoDataFrame, GeoSeries
 from geojson import Feature, FeatureCollection
 from shapely.geometry import shape, Point, Polygon
 from h3 import h3
-
+import folium
 
 class PolygonDataFrame(GeoDataFrame):
     """
@@ -16,7 +16,12 @@ class PolygonDataFrame(GeoDataFrame):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+        if len(self) > 0:  # if initialized from a constructor, not PolygonDataFrame()
+            centroids = self.centroid
+            self.centroid_point = [centroids.y.mean(), centroids.x.mean()]  # don't want to overwrite self.centroid attribute
+            # Rough logic - seems to work for Chicago but TBD if generalizes at higher/lower scales
+            self.zoom = round(max(centroids.x.quantile(0.95) - centroids.x.quantile(0.05), centroids.y.quantile(0.95) - centroids.y.quantile(0.05)) * 40)
+
     def from_gpdf(self, gpdf):
         # TODO - validate that geometry is polygon 
         # TODO - isn't this constructor superfluous, given that it functions the same as __init___ ? Dunno if this explicit constructor is helpful or confusing
@@ -37,6 +42,19 @@ class PolygonDataFrame(GeoDataFrame):
         # NOTE - watch out for issues with non-numeric ids, I've seen folium reject them in choropleth. I think the dtypes between geojson 'id' and 'id' col need to match 
         fc  = FeatureCollection([Feature(id = f['id'], geometry=f['geometry'], properties=f['properties']) for f in self._to_geo()['features']])
         return fc
+
+    def to_choropleth(self, col, fill_color='YlOrRd', **kwargs):
+        m = folium.Map(location=CENTER, zoom_start=ZOOM)
+        folium.Choropleth(
+            geo_data=self.to_feature_collection(),
+            name='choropleth',
+            data=self.reset_index(), 
+            columns=['id', col],
+            key_on='feature.id',
+            fill_color=fill_color,
+            **kwargs
+        ).add_to(m)
+        return m
 
 
 def _df_to_boundaries(df: pd.DataFrame, boundaries: GeoDataFrame, aggfunc=np.sum):
