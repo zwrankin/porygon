@@ -6,6 +6,7 @@ from geojson import Feature, FeatureCollection
 from shapely.geometry import shape, Point, Polygon
 from h3 import h3
 import folium
+from copy import deepcopy
 
 class PolygonDataFrame(GeoDataFrame):
     """
@@ -21,6 +22,7 @@ class PolygonDataFrame(GeoDataFrame):
             self.centroid_point = [centroids.y.mean(), centroids.x.mean()]  # don't want to overwrite self.centroid attribute
             # Rough logic - seems to work for Chicago but TBD if generalizes at higher/lower scales
             self.zoom = round(max(centroids.x.quantile(0.95) - centroids.x.quantile(0.05), centroids.y.quantile(0.95) - centroids.y.quantile(0.05)) * 40)
+            # self.map = self._make_base_map()  # may be used later to allowing layering
 
     def from_gpdf(self, gpdf):
         # TODO - validate that geometry is polygon 
@@ -43,8 +45,27 @@ class PolygonDataFrame(GeoDataFrame):
         fc  = FeatureCollection([Feature(id = f['id'], geometry=f['geometry'], properties=f['properties']) for f in self._to_geo()['features']])
         return fc
 
-    def to_choropleth(self, col, fill_color='YlOrRd', **kwargs):
-        m = folium.Map(location=CENTER, zoom_start=ZOOM)
+    def _make_base_map(self):
+        # TODO - should be class attribute 
+        return folium.Map(location=self.centroid_point, zoom_start=self.zoom) 
+
+    def to_choropleth(self, col: str, m=None, fill_color='YlOrRd', **kwargs):
+        """
+        Make folium.Choropleth map
+        To add a layer to existing map, provide an instance of folium.Map
+        ----------
+        col : Name of column in dataframe to plot
+        m : folium.Map object. If not provided, makes a new map with just the choropleth layer
+        Returns
+        -------
+        folium.Map with added Choropleth layer 
+        """
+        assert col in self.columns, f"col {col} not found in dataframe columns - {self.columns.tolist()}"
+
+        # TODO - allow layering to self.map 
+        if m is None:
+            m = self._make_base_map()
+
         folium.Choropleth(
             geo_data=self.to_feature_collection(),
             name='choropleth',
@@ -54,6 +75,7 @@ class PolygonDataFrame(GeoDataFrame):
             fill_color=fill_color,
             **kwargs
         ).add_to(m)
+
         return m
 
 
