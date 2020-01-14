@@ -140,11 +140,6 @@ def _df_to_h3(df, h3_level=8, aggfunc=np.sum):
     if isinstance(df, GeoDataFrame):
         df = _gpdf_to_latlong_df(df)
 
-
-    """
-    Utility to add h3 column to pd.DataFrame, could likely be turned to a lambda function
-    df['h3'] = df.apply(lambda row: lat_lng_to_h3(row, h3_level=8), axis=1)
-    """
     # Utility for h3.geo_to_h3 to work on dataframe row
     lat_lng_to_h3 = lambda row, h3_level: h3.geo_to_h3(row['latitude'], row['longitude'], h3_level)
     df['id'] = df.apply(lat_lng_to_h3, args=(h3_level, ), axis=1)
