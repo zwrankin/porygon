@@ -5,7 +5,11 @@ from geopandas import GeoDataFrame, GeoSeries
 from geojson import Feature, FeatureCollection
 from shapely.geometry import shape, Point, Polygon
 from h3 import h3
+import folium
+import seaborn as sns
+from pandas.api.types import is_string_dtype, is_numeric_dtype
 
+from folium_extensions.plotting import add_h3_legend
 
 class PolygonDataFrame(GeoDataFrame):
     """
@@ -16,7 +20,13 @@ class PolygonDataFrame(GeoDataFrame):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+        if len(self) > 0:  # if initialized from a constructor, not PolygonDataFrame()
+            centroids = self.centroid
+            self.centroid_point = [centroids.y.mean(), centroids.x.mean()]  # don't want to overwrite self.centroid attribute
+            # Rough logic - seems to work for Chicago but TBD if generalizes at higher/lower scales
+            self.zoom = round(max(centroids.x.quantile(0.95) - centroids.x.quantile(0.05), centroids.y.quantile(0.95) - centroids.y.quantile(0.05)) * 40)
+            # self.map = self._make_base_map()  # may be used later to allowing layering
+
     def from_gpdf(self, gpdf):
         # TODO - validate that geometry is polygon 
         # TODO - isn't this constructor superfluous, given that it functions the same as __init___ ? Dunno if this explicit constructor is helpful or confusing
@@ -37,6 +47,100 @@ class PolygonDataFrame(GeoDataFrame):
         # NOTE - watch out for issues with non-numeric ids, I've seen folium reject them in choropleth. I think the dtypes between geojson 'id' and 'id' col need to match 
         fc  = FeatureCollection([Feature(id = f['id'], geometry=f['geometry'], properties=f['properties']) for f in self._to_geo()['features']])
         return fc
+
+    def _make_base_map(self):
+        # TODO - should be class attribute 
+        return folium.Map(location=self.centroid_point, zoom_start=self.zoom) 
+
+    def to_choropleth(self, col: str, m=None, fill_color='YlOrRd', **kwargs):
+        """
+        Make folium.Choropleth map
+        To add a layer to existing map, provide an instance of folium.Map
+        ----------
+        col : Name of column in dataframe to plot
+        m : folium.Map object. If not provided, makes a new map with just the choropleth layer
+        Returns
+        -------
+        folium.Map with added Choropleth layer 
+        """
+        assert col in self.columns, f"col {col} not found in dataframe columns - {self.columns.tolist()}"
+
+        # TODO - allow layering to self.map 
+        if m is None:
+            m = self._make_base_map()
+
+        folium.Choropleth(
+            geo_data=self.to_feature_collection(),
+            name='choropleth',
+            data=self.reset_index(), 
+            columns=['id', col],
+            key_on='feature.id',
+            fill_color=fill_color,
+            **kwargs
+        ).add_to(m)
+
+        return m
+
+    def to_categorical_map(self, val_col: str, cat_col: str, m=None, color_key=None, nan_fill_color='black', **kwargs):
+        """
+        Make custom folium.GeoJson with categorical observations 
+        To add a layer to existing map, provide an instance of folium.Map
+        ----------
+        val_col : Name of column with values 
+        cat_col : Name of column with categorical values 
+        m : folium.Map object. If not provided, makes a new map with just the categorical map layer
+        Returns
+        -------
+        folium.Map with added layer 
+        """
+        # TODO - refactor this elsewhere
+        assert val_col in self.columns, f"val_col {val_col} not found in dataframe columns - {self.columns.tolist()}"
+        assert cat_col in self.columns, f"cat_col {cat_col} not found in dataframe columns - {self.columns.tolist()}"
+        assert is_numeric_dtype(self[val_col]), f'{val_col} is not numeric'
+        assert is_string_dtype(self[cat_col]), f'{cat_col} is not numeric'
+
+        if color_key is None: 
+            categories = self[cat_col].value_counts().index  # default is sort by frequency
+            colors = sns.color_palette('deep', 10).as_hex() + sns.color_palette('bright', 10).as_hex()
+
+            if len(categories) > len(colors):
+                # TODO - log a warning that can only take top n colors
+                color_key = dict(zip(categories[:len(colors)], colors))
+            else: 
+                color_key = dict(zip(categories, colors[:len(categories)]))
+
+        # TODO - allow layering to self.map 
+        if m is None:
+            m = self._make_base_map()
+
+        def style_function(feature):
+            row = self.loc[feature['id']]
+            if row[cat_col] in color_key.keys():
+                color = color_key[row[cat_col]] 
+            else: 
+                color = nan_fill_color 
+            opacity = 0.7 
+            return {
+                'weight': 2,
+                'opacity': opacity,
+                'color': color,
+                'fillColor': color,
+                'fillOpacity': opacity, 
+            }
+
+        folium.GeoJson(
+            self.to_feature_collection(),
+            style_function=style_function,
+            tooltip=folium.features.GeoJsonTooltip(
+                fields=[cat_col, val_col],
+                # aliases=['Category', 'Value'],
+            ),
+            **kwargs
+        ).add_to(m)
+
+        m = add_h3_legend(m, color_key)
+
+        return m
 
 
 def _df_to_boundaries(df: pd.DataFrame, boundaries: GeoDataFrame, aggfunc=np.sum):
@@ -100,11 +204,6 @@ def _df_to_h3(df, h3_level=8, aggfunc=np.sum):
     if isinstance(df, GeoDataFrame):
         df = _gpdf_to_latlong_df(df)
 
-
-    """
-    Utility to add h3 column to pd.DataFrame, could likely be turned to a lambda function
-    df['h3'] = df.apply(lambda row: lat_lng_to_h3(row, h3_level=8), axis=1)
-    """
     # Utility for h3.geo_to_h3 to work on dataframe row
     lat_lng_to_h3 = lambda row, h3_level: h3.geo_to_h3(row['latitude'], row['longitude'], h3_level)
     df['id'] = df.apply(lat_lng_to_h3, args=(h3_level, ), axis=1)

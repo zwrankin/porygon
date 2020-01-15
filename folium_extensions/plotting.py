@@ -1,47 +1,16 @@
-import pandas as pd
-from h3 import h3
 from branca.element import Template, MacroElement
 
 
-def lat_lng_to_h3(row, h3_level=9):
+def add_h3_legend(m, color_key:dict, title='Legend (draggable!)'):
     """
-    Utility to add h3 column to pd.DataFrame
-    df['h3'] = df.apply(lambda row: lat_lng_to_h3(row, h3_level=8), axis=1)
+    Adds a legend for a categorical variable, dislayed by a colored hexagon.
+        :param color_key: dictionary whose keys are the category names and values are the color codes
+        :title: legend title
     """
-    return h3.geo_to_h3(row['latitude'], row['longitude'], h3_level)
-
-
-# def make_h3_df(df, var=None, h3_level=9):
-#     """A half-baked function to aggregate dataframes by h3 tile"""
-#     if var is None:
-#         var = 'count'
-#         df[var] = 1
-#     df['h3'] = df.apply(lambda row: lat_lng_to_h3(row, h3_level=h3_level), axis=1)
-#     df_h3 = df.groupby('h3')[var].sum().reset_index()
-#     return df_h3
-
-
-def h3df_to_geojson(df: pd.DataFrame):
-    """
-    Convert pd.DataFrame to geojson object. By default will turn all columns into properties
-    TODO - need to handle dtypes in json serialization - check for int32 or int64
-    """
-    if df.index.name == 'h3':
-        df = df.reset_index()
-    assert 'h3' in df.columns
-
-    h3_to_feature = lambda row: {
-      "type": "Feature",
-        'id': row['h3'],
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [h3.h3_to_geo_boundary(row['h3'], geo_json=True)]
-      },
-      "properties": dict(row) 
-    }
-    
-    features = [h3_to_feature(row) for index, row in df.reset_index().iterrows()]
-    return {"type":"FeatureCollection","features": features}
+    macro = MacroElement()
+    macro._template = Template(make_h3_legend_html(color_key, title=title))
+    m.get_root().add_child(macro)
+    return m
 
 
 def make_h3_legend_html(color_key: dict, title='Legend (draggable!)'):
@@ -49,6 +18,7 @@ def make_h3_legend_html(color_key: dict, title='Legend (draggable!)'):
     Generate html needed for color-coded hexagons  
     Adapted from https://nbviewer.jupyter.org/gist/talbertc-usgs/18f8901fc98f109f2b71156cf3ac81cd
         :param color_key: dictionary with keys of the categories, and values of valid folium color codes
+        :param title: legend title
     """
     # Ordered list of legend elements
     labels = ''
@@ -143,9 +113,3 @@ def make_h3_legend_html(color_key: dict, title='Legend (draggable!)'):
 
     return template 
 
-
-def add_h3_legend(m, color_key:dict, title='Legend (draggable!)'):
-    macro = MacroElement()
-    macro._template = Template(make_h3_legend_html(color_key, title=title))
-    m.get_root().add_child(macro)
-    return m
