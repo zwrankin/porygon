@@ -1,1 +1,1 @@
-from folium_extensions.datastructures import PolygonDataFrame, H3DataFrame, AdminDataFrame
+from folium_extensions.datastructures import PolygonDataFrame
