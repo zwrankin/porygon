@@ -81,7 +81,7 @@ class PolygonDataFrame(GeoDataFrame):
 
         return m
 
-    def to_categorical_map(self, val_col: str, cat_col: str, m=None, color_key=None, **kwargs):
+    def to_categorical_map(self, val_col: str, cat_col: str, m=None, color_key=None, nan_fill_color='black', **kwargs):
         """
         Make custom folium.GeoJson with categorical observations 
         To add a layer to existing map, provide an instance of folium.Map
@@ -99,17 +99,15 @@ class PolygonDataFrame(GeoDataFrame):
         assert is_numeric_dtype(self[val_col]), f'{val_col} is not numeric'
         assert is_string_dtype(self[cat_col]), f'{cat_col} is not numeric'
 
-        categories = self[cat_col].unique()
-
         if color_key is None: 
+            categories = self[cat_col].value_counts().index  # default is sort by frequency
             colors = sns.color_palette('deep', 10).as_hex() + sns.color_palette('bright', 10).as_hex()
 
             if len(categories) > len(colors):
-                # TODO - log a warning that not all categories will display
-                # TODO - either explicitly map some to "OTHER", or sort categories and take first X of them, or repeat colors
-                pass 
-            
-            color_key = dict(zip(categories, colors))
+                # TODO - log a warning that can only take top n colors
+                color_key = dict(zip(categories[:len(colors)], colors))
+            else: 
+                color_key = dict(zip(categories, colors[:len(categories)]))
 
         # TODO - allow layering to self.map 
         if m is None:
@@ -117,7 +115,10 @@ class PolygonDataFrame(GeoDataFrame):
 
         def style_function(feature):
             row = self.loc[feature['id']]
-            color = color_key[row[cat_col]] 
+            if row[cat_col] in color_key.keys():
+                color = color_key[row[cat_col]] 
+            else: 
+                color = nan_fill_color 
             opacity = 0.7 
             return {
                 'weight': 2,
