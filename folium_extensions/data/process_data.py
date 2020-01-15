@@ -24,6 +24,7 @@ def process_chicago_L_stops():
     df['latitude'] = df.location.apply(lambda x: float(ast.literal_eval(x)['latitude'])) 
     df['longitude'] = df.location.apply(lambda x: float(ast.literal_eval(x)['longitude'])) 
     cols = ['station_name', 'latitude', 'longitude', 'station_descriptive_name',  'red', 'blue', 'g', 'brn', 'p', 'pexp', 'y', 'pnk', 'o']
+    df = df[cols]
     df.to_csv(Path(PROCESSED_DATA_DIR, 'chicago_L_stops.csv'), index=False)
 
 if __name__ == "__main__":
