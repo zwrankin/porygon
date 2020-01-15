@@ -5,7 +5,7 @@ from dotenv import find_dotenv, load_dotenv
 from pathlib import Path
 from sodapy import Socrata
 
-from folium_extensions.data.config import RAW_DATA_DIR
+from folium_extensions.data.config import RAW_DATA_DIR, PROCESSED_DATA_DIR
 
 load_dotenv(find_dotenv())
 
@@ -37,8 +37,11 @@ def download_chicago_census_tract_boundaries():
     results = socrata_client.get("74p9-q2aq", limit = 1_000_000) 
     with open(Path(RAW_DATA_DIR, 'chicago_census_tract_boundaries.json'), 'w') as f:
         json.dump(results, f)
+    # Since there are no changes, just directly save in processed data
+    with open(Path(PROCESSED_DATA_DIR, 'chicago_census_tract_boundaries.json'), 'w') as f:
+        json.dump(results, f)
 
 
 if __name__ == "__main__":
-    download_chicago_traffic_accidents()
+    # download_chicago_traffic_accidents()
     download_chicago_census_tract_boundaries()
