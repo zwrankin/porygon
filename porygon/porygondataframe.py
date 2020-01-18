@@ -37,8 +37,8 @@ class PorygonDataFrame(GeoDataFrame):
         assert isinstance(gpdf, GeoDataFrame)
         return PorygonDataFrame(df) 
 
-    def from_h3(self, df, h3_level=9, aggfunc=np.sum):
-        return _df_to_h3(df, h3_level=9, aggfunc=np.sum)
+    def from_h3(self, df, h3_level=8, aggfunc=np.sum):
+        return _df_to_h3(df, h3_level=h3_level, aggfunc=np.sum)
 
     def from_boundaries(self, df: pd.DataFrame, boundaries: GeoDataFrame, aggfunc=np.sum):
         return _df_to_boundaries(df, boundaries, aggfunc)
