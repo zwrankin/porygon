@@ -1,1 +1,1 @@
-from porygon.datastructures import PolygonDataFrame
+from porygon.porygondataframe import PolygonDataFrame

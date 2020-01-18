@@ -4,8 +4,7 @@ import geopandas
 from geopandas import GeoDataFrame, GeoSeries
 import geojson
 from geojson import Feature, FeatureCollection
-from shapely.geometry import shape, Point, Polygon
-from scipy.spatial import Voronoi
+from shapely.geometry import Point, Polygon
 from h3 import h3
 import folium
 import seaborn as sns
@@ -13,16 +12,17 @@ from pandas.api.types import is_string_dtype, is_numeric_dtype
 
 from porygon.plotting import add_h3_legend
 
-class PolygonDataFrame(GeoDataFrame):
+
+class PorygonDataFrame(GeoDataFrame):
     """
-    A PolygonDataFrame extends the functionality of GeoDataFrame objects with regard to polygons 
+    A PorygonDataFrame extends the functionality of GeoDataFrame objects with regard to polygons 
     Can be constructed from polygon-indexed data using from_gpdf or from point data using various constructor methods such as from_h3
     that aggregate the point data to corresponding polygons. 
     """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if len(self) > 0:  # if initialized from a constructor, not PolygonDataFrame()
+        if len(self) > 0:  # if initialized from a constructor, not PorygonDataFrame()
             centroids = self.centroid
             self.centroid_point = [centroids.y.mean(), centroids.x.mean()]  # don't want to overwrite self.centroid attribute
             # Rough logic - seems to work for Chicago but TBD if generalizes at higher/lower scales
@@ -33,7 +33,7 @@ class PolygonDataFrame(GeoDataFrame):
         # TODO - validate that geometry is polygon 
         # TODO - isn't this constructor superfluous, given that it functions the same as __init___ ? Dunno if this explicit constructor is helpful or confusing
         assert isinstance(gpdf, GeoDataFrame)
-        return PolygonDataFrame(df) 
+        return PorygonDataFrame(df) 
 
     def from_h3(self, df, h3_level=9, aggfunc=np.sum):
         return _df_to_h3(df, h3_level=9, aggfunc=np.sum)
@@ -49,7 +49,7 @@ class PolygonDataFrame(GeoDataFrame):
     def to_feature_collection(self):
         """
         Wrapper for GeoDataFrame._to_geo() that returns the Python dict as geojson.FeatureCollection
-        The features 'id' values correspond to the 'id' index of the PolygonDataFrame, which is helpful for plotting utilities
+        The features 'id' values correspond to the 'id' index of the PorygonDataFrame, which is helpful for plotting utilities
         """
         # NOTE - watch out for issues with non-numeric ids, I've seen folium reject them in choropleth. I think the dtypes between geojson 'id' and 'id' col need to match 
         fc  = FeatureCollection([Feature(id = f['id'], geometry=f['geometry'], properties=f['properties']) for f in self._to_geo()['features']])
@@ -163,7 +163,7 @@ def _df_to_boundaries(df: pd.DataFrame, boundaries: GeoDataFrame, aggfunc=np.sum
 
     Returns
     -------
-    PolygonDataFrame of the dataframe aggregated to polygon, with index 'id' of the boundaries's 'id' index
+    PorygonDataFrame of the dataframe aggregated to polygon, with index 'id' of the boundaries's 'id' index
     """
 
     assert boundaries.index.name == 'id'
@@ -192,7 +192,7 @@ def _df_to_boundaries(df: pd.DataFrame, boundaries: GeoDataFrame, aggfunc=np.sum
     
     gpdf = pd.merge(df.reset_index(), boundaries, on='id') 
     
-    return PolygonDataFrame(gpdf.set_index('id')) 
+    return PorygonDataFrame(gpdf.set_index('id')) 
     
 
 def _df_to_h3(df, h3_level=8, aggfunc=np.sum):
@@ -231,7 +231,7 @@ def _df_to_h3(df, h3_level=8, aggfunc=np.sum):
     h3_to_polygon = lambda h3_address: Polygon(h3.h3_to_geo_boundary(h3_address, geo_json=True)) 
     df['geometry'] = df.id.apply(h3_to_polygon)
     
-    return PolygonDataFrame(df.set_index('id')) 
+    return PorygonDataFrame(df.set_index('id')) 
 
 
 def _validate_point_data(df: pd.DataFrame):
@@ -286,39 +286,3 @@ def _assign_polygon_index(gpdf: GeoDataFrame, polygons: GeoSeries):
         # shapely.vectorized.contains(polygons.loc[i], gpdf.geometry.x, gpdf.geometry.y)
    
     return gpdf
-
-
-def coords_to_voronoi_polygons(x, y):
-    """
-    Get voronoi cells of a set of lat/longs
-    Parameters
-    ----------
-    x : array of latitudes
-    y : array of longitudes
-
-    Returns
-    -------
-    polygons  : list of shapely.Polygons
-    """
-
-    vor = Voronoi([i for i in zip(x, y)])
-    
-    polygons = []
-
-    for i in range(len(vor.regions)-1):
-        vertex_list = []
-        point_index = vor.point_region[i]  # the order of vor.regions is NOT the same as input lat/long
-        for x in vor.regions[point_index]:
-            if x == -1:
-                break
-            else:
-                vertex = vor.vertices[x]
-                # vertex = (vertex[1], vertex[0])  # flip the order for geojson???
-                vertex = (vertex[0], vertex[1])
-            vertex_list.append(vertex)
-        if len(vertex_list) >= 3:  # edge cells aren't enclosed
-            polygons.append(Polygon(vertex_list))
-        else:
-            polygons.append(Polygon([]))
-
-    return polygons
