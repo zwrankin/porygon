@@ -13,7 +13,7 @@ def add_h3_legend(m, color_key:dict, title='Legend (draggable!)'):
     return m
 
 
-def make_h3_legend_html(color_key: dict, title='Legend (draggable!)'):
+def make_h3_legend_html(color_key: dict, title: str):
     """
     Generate html needed for color-coded hexagons  
     Adapted from https://nbviewer.jupyter.org/gist/talbertc-usgs/18f8901fc98f109f2b71156cf3ac81cd

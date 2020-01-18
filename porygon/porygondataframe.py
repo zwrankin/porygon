@@ -90,7 +90,8 @@ class PorygonDataFrame(GeoDataFrame):
 
         return m
 
-    def to_categorical_map(self, val_col: str, cat_col: str, m=None, color_key=None, nan_fill_color='black', **kwargs):
+    def to_categorical_map(self, val_col: str, cat_col: str, m=None, color_key=None, nan_fill_color='black', 
+        legend_title='Legend (Draggable!)', **kwargs):
         """
         Make custom folium.GeoJson with categorical observations 
         To add a layer to existing map, provide an instance of folium.Map
@@ -147,7 +148,7 @@ class PorygonDataFrame(GeoDataFrame):
             **kwargs
         ).add_to(m)
 
-        m = add_h3_legend(m, color_key)
+        m = add_h3_legend(m, color_key, legend_title)
 
         return m
 
