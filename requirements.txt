@@ -1,8 +1,8 @@
-pandas
-jupyter
-geojson
 geopandas
-plotly
+scipy
+geojson
 folium
-h3
 seaborn
+cmake  # required for h3
+h3
+GitPython

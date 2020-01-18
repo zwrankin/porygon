@@ -1,1 +1,0 @@
-from folium_extensions.datastructures import PolygonDataFrame
