@@ -2,7 +2,7 @@ import pandas as pd
 import json
 from pathlib import Path
 
-from folium_extensions.data.config import PROCESSED_DATA_DIR
+from porygon.data.config import PROCESSED_DATA_DIR
 
 
 def load_chicago_traffic_accidents():

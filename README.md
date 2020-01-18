@@ -1,4 +1,4 @@
-folium_extensions
+porygon
 ==============================
 
 A library for making beautiful folium maps from geospatial data.  
@@ -6,6 +6,6 @@ A library for making beautiful folium maps from geospatial data.
 **Visualization Utilities** streamline and extend folium functionality (e.g. adding h3 hexagon color legend)
 
 ## Gallery
-https://github.com/zwrankin/folium_extensions/tree/master/gallery
+https://github.com/zwrankin/porygon/tree/master/gallery
 Chicago traffic accidents by Brand (see gallery for interactive html)
 ![Alt text](gallery/accidents_by_brand.PNG?raw=true "Accidents by Brand")

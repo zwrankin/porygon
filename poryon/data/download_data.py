@@ -5,7 +5,7 @@ from dotenv import find_dotenv, load_dotenv
 from pathlib import Path
 from sodapy import Socrata
 
-from folium_extensions.data.config import RAW_DATA_DIR, PROCESSED_DATA_DIR
+from porygon.data.config import RAW_DATA_DIR, PROCESSED_DATA_DIR
 
 load_dotenv(find_dotenv())
 

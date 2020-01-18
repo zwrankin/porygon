@@ -11,7 +11,7 @@ import folium
 import seaborn as sns
 from pandas.api.types import is_string_dtype, is_numeric_dtype
 
-from folium_extensions.plotting import add_h3_legend
+from porygon.plotting import add_h3_legend
 
 class PolygonDataFrame(GeoDataFrame):
     """

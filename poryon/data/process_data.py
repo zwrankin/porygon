@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 import ast 
 
-from folium_extensions.data.config import RAW_DATA_DIR, PROCESSED_DATA_DIR
+from porygon.data.config import RAW_DATA_DIR, PROCESSED_DATA_DIR
 
 
 def process_chicago_traffic_accidents():
