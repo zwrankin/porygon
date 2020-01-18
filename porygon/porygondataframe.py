@@ -10,6 +10,8 @@ import folium
 import seaborn as sns
 from pandas.api.types import is_string_dtype, is_numeric_dtype
 
+from porygon.utils import _validate_point_data, df_to_gpdf, gpdf_to_latlong_df
+from porygon.utils import coords_to_voronoi_polygons
 from porygon.plotting import add_h3_legend
 
 
@@ -174,7 +176,7 @@ def _df_to_boundaries(df: pd.DataFrame, boundaries: GeoDataFrame, aggfunc=np.sum
         boundaries.index = boundaries.index.astype('str')
 
     if not isinstance(df, GeoDataFrame):
-        df = _df_to_gpdf(df)
+        df = df_to_gpdf(df)
     
     if isinstance(boundaries, GeoSeries):
         srs = boundaries.copy()
@@ -213,7 +215,7 @@ def _df_to_h3(df, h3_level=8, aggfunc=np.sum):
     df = _validate_point_data(df)
 
     if isinstance(df, GeoDataFrame):
-        df = _gpdf_to_latlong_df(df)
+        df = gpdf_to_latlong_df(df)
 
     # Utility for h3.geo_to_h3 to work on dataframe row
     lat_lng_to_h3 = lambda row, h3_level: h3.geo_to_h3(row['latitude'], row['longitude'], h3_level)
@@ -232,38 +234,6 @@ def _df_to_h3(df, h3_level=8, aggfunc=np.sum):
     df['geometry'] = df.id.apply(h3_to_polygon)
     
     return PorygonDataFrame(df.set_index('id')) 
-
-
-def _validate_point_data(df: pd.DataFrame):
-    """
-    Validates that data has valid point data, removes missingness. 
-    Parameters
-    ----------
-    df : pd.DataFrame with latitude & longitude columns, or GeoDataFrame with valid point geometry
-    """
-    if isinstance(df, GeoDataFrame):
-        # TODO - validate that index contains alls points (not polygons)
-        print('using unvalidated GeoDataFrame')
-    elif isinstance(df, pd.DataFrame): 
-        assert all(c in df.columns for c in ['latitude', 'longitude']), 'latitude and longitude not found in columns'
-        # TODO - throw warning if any missingness
-        df.dropna(subset=['latitude', 'longitude'], inplace=True)
-    else: 
-        raise ValueError(f'Data structure not recognized: {type(df)}')
-
-    return df
-
-
-def _gpdf_to_latlong_df(gpdf: GeoDataFrame):
-    """Converts GeoDataFrame with point geometry to pd.DataFrame with latitude and longitude columns"""
-    gpdf['longitude'] = gpdf.geometry.x
-    gpdf['latitude'] = gpdf.geometry.y
-    return gpdf.drop(columns='geometry')
-
-
-def _df_to_gpdf(df: pd.DataFrame):
-    """Converts pd.DataFrame with latitude and longitude columns to GeoDataFrame with point geometry"""
-    return GeoDataFrame(df.drop(columns=['latitude', 'longitude']), geometry=geopandas.points_from_xy(df.longitude, df.latitude))
 
 
 def _assign_polygon_index(gpdf: GeoDataFrame, polygons: GeoSeries):
