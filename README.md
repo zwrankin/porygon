@@ -10,7 +10,7 @@ A library for making beautiful maps from geospatial data.
 
 ## Motivating Example
 Using the >200,000 [Chicago Traffic Accidents from 2019](https://data.cityofchicago.org/Transportation/Traffic-Crashes-Crashes/85ca-t3if), which parts of the City have proclivities toward different vehicle makes? (See [Quickstart](https://github.com/zwrankin/porygon/blob/master/notebooks/Quickstart.ipynb) for analysis code, and [Gallery](https://github.com/zwrankin/porygon/tree/master/gallery) for interactive html and more examples)
-![Accidents by Make](gallery/traffic_accidents_by_make.PNG?raw=true "Accidents by Make")
+![Accidents by Make](gallery/traffic_accidents_by_make.png?raw=true "Accidents by Make")
 
 
 ## Getting started
