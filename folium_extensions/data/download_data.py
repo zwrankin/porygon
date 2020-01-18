@@ -42,6 +42,14 @@ def download_chicago_census_tract_boundaries():
         json.dump(results, f)
 
 
+def download_chicago_cta_L_stops():
+    """Download Chicago CTA L stops from https://data.cityofchicago.org/Transportation/CTA-System-Information-List-of-L-Stops/8pix-ypme"""
+    results = socrata_client.get("8pix-ypme", limit = 1_000_000) 
+    df = pd.DataFrame.from_records(results)
+    df.to_csv(Path(RAW_DATA_DIR, 'chicago_L_stops.csv'), index=False)
+    
+
 if __name__ == "__main__":
-    # download_chicago_traffic_accidents()
+    download_chicago_traffic_accidents()
     download_chicago_census_tract_boundaries()
+    download_chicago_cta_L_stops()

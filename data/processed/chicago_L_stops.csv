@@ -1,0 +1,144 @@
+station_name,latitude,longitude,station_descriptive_name,red,blue,g,brn,p,pexp,y,pnk,o
+18th,41.857908,-87.669147,18th (Pink Line),False,False,False,False,False,False,False,True,False
+35th/Archer,41.829353,-87.680622,35th/Archer (Orange Line),False,False,False,False,False,False,False,False,True
+35th-Bronzeville-IIT,41.831677,-87.625826,35th-Bronzeville-IIT (Green Line),False,False,True,False,False,False,False,False,False
+43rd,41.816462,-87.619021,43rd (Green Line),False,False,True,False,False,False,False,False,False
+47th,41.809209,-87.618826,47th (Green Line),False,False,True,False,False,False,False,False,False
+47th,41.810318,-87.63094,47th (Red Line),True,False,False,False,False,False,False,False,False
+51st,41.80209,-87.618487,51st (Green Line),False,False,True,False,False,False,False,False,False
+54th/Cermak,41.85177331,-87.75669201,54th/Cermak (Pink Line),False,False,False,False,False,False,False,True,False
+63rd,41.780536,-87.630952,63rd (Red Line),True,False,False,False,False,False,False,False,False
+69th,41.768367,-87.625724,69th (Red Line),True,False,False,False,False,False,False,False,False
+79th,41.750419,-87.625112,79th (Red Line),True,False,False,False,False,False,False,False,False
+87th,41.735372,-87.624717,87th (Red Line),True,False,False,False,False,False,False,False,False
+95th/Dan Ryan,41.722377,-87.624342,95th/Dan Ryan (Red Line),True,False,False,False,False,False,False,False,False
+Adams/Wabash,41.879507,-87.626037,"Adams/Wabash (Brown, Green, Orange, Pink & Purple Lines)",False,False,True,False,False,True,False,True,True
+Addison,41.947028,-87.674642,Addison (Brown Line),False,False,False,True,False,False,False,False,False
+Addison,41.947428,-87.653626,Addison (Red Line),True,False,False,False,False,False,False,False,False
+Addison,41.94738,-87.71906,Addison (Blue Line),False,True,False,False,False,False,False,False,False
+Argyle,41.973453,-87.65853,Argyle (Red Line),True,False,False,False,False,False,False,False,False
+Armitage,41.918217,-87.652644,Armitage (Brown & Purple Lines),False,False,False,True,False,True,False,False,False
+Ashland,41.839234,-87.665317,Ashland (Orange Line),False,False,False,False,False,False,False,False,True
+Ashland,41.885269,-87.666969,Ashland (Green & Pink Lines),False,False,True,False,False,False,False,True,False
+Ashland/63rd,41.77886,-87.663766,Ashland/63rd (Green Line),False,False,True,False,False,False,False,False,False
+Austin,41.870851,-87.776812,Austin (Blue Line),False,True,False,False,False,False,False,False,False
+Austin,41.887293,-87.774135,Austin (Green Line),False,False,True,False,False,False,False,False,False
+Belmont,41.938132,-87.712359,Belmont (Blue Line),False,True,False,False,False,False,False,False,False
+Belmont,41.939751,-87.65338,"Belmont (Red, Brown & Purple Lines)",True,False,False,False,False,False,False,False,False
+Berwyn,41.977984,-87.658668,Berwyn (Red Line),True,False,False,False,False,False,False,False,False
+Bryn Mawr,41.983504,-87.65884,Bryn Mawr (Red Line),True,False,False,False,False,False,False,False,False
+California,41.854109,-87.694774,California (Pink Line),False,False,False,False,False,False,False,True,False
+California,41.88422,-87.696234,California (Green Line),False,False,True,False,False,False,False,False,False
+California,41.921939,-87.69689,California (Blue Line),False,True,False,False,False,False,False,False,False
+Central,41.887389,-87.76565,Central (Green Line),False,False,True,False,False,False,False,False,False
+Central,42.063987,-87.685617,Central (Purple Line),False,False,False,False,True,True,False,False,False
+Central Park,41.853839,-87.714842,Central Park (Pink Line),False,False,False,False,False,False,False,True,False
+Cermak-Chinatown,41.853206,-87.630968,Cermak-Chinatown (Red Line),True,False,False,False,False,False,False,False,False
+Cermak-McCormick Place,41.853115,-87.626402,Cermak-McCormick Place (Green Line),False,False,True,False,False,False,False,False,False
+Chicago,41.896075,-87.655214,Chicago (Blue Line),False,True,False,False,False,False,False,False,False
+Chicago,41.89681,-87.635924,Chicago (Brown & Purple Lines),False,False,False,True,False,True,False,False,False
+Chicago,41.896671,-87.628176,Chicago (Red Line),True,False,False,False,False,False,False,False,False
+Cicero,41.85182,-87.745336,Cicero (Pink Line),False,False,False,False,False,False,False,True,False
+Cicero,41.871574,-87.745154,Cicero (Blue Line),False,True,False,False,False,False,False,False,False
+Cicero,41.886519,-87.744698,Cicero (Green Line),False,False,True,False,False,False,False,False,False
+Clark/Division,41.90392,-87.631412,Clark/Division (Red Line),True,False,False,False,False,False,False,False,False
+Clark/Lake,41.885737,-87.630886,"Clark/Lake (Blue, Brown, Green, Orange, Purple & Pink Lines)",False,False,True,False,False,True,False,True,True
+Clinton,41.875539,-87.640984,Clinton (Blue Line),False,True,False,False,False,False,False,False,False
+Clinton,41.885678,-87.641782,Clinton (Green & Pink Lines),False,False,True,False,False,False,False,True,False
+Conservatory,41.884904,-87.716523,Conservatory (Green Line),False,False,True,False,False,False,False,False,False
+Cottage Grove,41.780309,-87.605857,Cottage Grove (Green Line),False,False,True,False,False,False,False,False,False
+Cumberland,41.984246,-87.838028,Cumberland (Blue Line),False,True,False,False,False,False,False,False,False
+Damen,41.854517,-87.675975,Damen (Pink Line),False,False,False,False,False,False,False,True,False
+Damen,41.909744,-87.677437,Damen (Blue Line),False,True,False,False,False,False,False,False,False
+Damen,41.966286,-87.678639,Damen (Brown Line),False,False,False,True,False,False,False,False,False
+Davis,42.04771,-87.683543,Davis (Purple Line),False,False,False,False,True,True,False,False,False
+Dempster,42.041655,-87.681602,Dempster (Purple Line),False,False,False,False,True,True,False,False,False
+Dempster-Skokie,42.038951,-87.751919,Dempster-Skokie  (Yellow Line),False,False,False,False,False,False,True,False,False
+Diversey,41.932732,-87.653131,Diversey (Brown & Purple Lines),False,False,False,True,False,True,False,False,False
+Division,41.903355,-87.666496,Division (Blue Line),False,True,False,False,False,False,False,False,False
+Forest Park,41.874257,-87.817318,Forest Park (Blue Line),False,True,False,False,False,False,False,False,False
+Foster,42.05416,-87.68356,Foster (Purple Line),False,False,False,False,True,True,False,False,False
+Francisco,41.966046,-87.701644,Francisco (Brown Line),False,False,False,True,False,False,False,False,False
+Fullerton,41.925051,-87.652866,"Fullerton (Red, Brown & Purple Lines)",True,False,False,False,False,False,False,False,False
+Garfield,41.795172,-87.618327,Garfield (Green Line),False,False,True,False,False,False,False,False,False
+Garfield,41.79542,-87.631157,Garfield (Red Line),True,False,False,False,False,False,False,False,False
+Grand,41.891189,-87.647578,Grand (Blue Line),False,True,False,False,False,False,False,False,False
+Grand,41.891665,-87.628021,Grand (Red Line),True,False,False,False,False,False,False,False,False
+Granville,41.993664,-87.659202,Granville (Red Line),True,False,False,False,False,False,False,False,False
+Halsted,41.84678,-87.648088,Halsted (Orange Line),False,False,False,False,False,False,False,False,True
+Halsted,41.778943,-87.644244,Halsted (Green Line),False,False,True,False,False,False,False,False,False
+Harlem,41.98227,-87.8089,Harlem (Blue Line - O'Hare Branch),False,True,False,False,False,False,False,False,False
+Harlem,41.87349,-87.806961,Harlem (Blue Line - Forest Park Branch),False,True,False,False,False,False,False,False,False
+Harlem/Lake,41.886848,-87.803176,Harlem/Lake (Green Line),False,False,True,False,False,False,False,False,False
+Harold Washington Library-State/Van Buren,41.876862,-87.628196,"Harold Washington Library-State/Van Buren (Brown, Orange, Purple & Pink Lines)",False,False,False,False,False,True,False,True,True
+Harrison,41.874039,-87.627479,Harrison (Red Line),True,False,False,False,False,False,False,False,False
+Howard,42.019063,-87.672892,"Howard (Red, Purple & Yellow Lines)",False,False,False,False,True,True,True,False,False
+Illinois Medical District,41.875706,-87.673932,Illinois Medical District (Blue Line),False,True,False,False,False,False,False,False,False
+Indiana,41.821732,-87.621371,Indiana (Green Line),False,False,True,False,False,False,False,False,False
+Irving Park,41.952925,-87.729229,Irving Park (Blue Line),False,True,False,False,False,False,False,False,False
+Irving Park,41.954521,-87.674868,Irving Park (Brown Line),False,False,False,True,False,False,False,False,False
+Jackson,41.878183,-87.629296,Jackson (Blue Line),False,True,False,False,False,False,False,False,False
+Jackson,41.878153,-87.627596,Jackson (Red Line),True,False,False,False,False,False,False,False,False
+Jarvis,42.015876,-87.669092,Jarvis (Red Line),True,False,False,False,False,False,False,False,False
+Jefferson Park,41.970634,-87.760892,Jefferson Park (Blue Line),False,True,False,False,False,False,False,False,False
+Kedzie,41.804236,-87.704406,Kedzie (Orange Line),False,False,False,False,False,False,False,False,True
+Kedzie,41.853964,-87.705408,Kedzie (Pink Line),False,False,False,False,False,False,False,True,False
+Kedzie,41.965996,-87.708821,Kedzie (Brown Line),False,False,False,True,False,False,False,False,False
+Kedzie,41.884321,-87.706155,Kedzie (Green Line),False,False,True,False,False,False,False,False,False
+Kedzie-Homan,41.874341,-87.70604,Kedzie-Homan (Blue Line),False,True,False,False,False,False,False,False,False
+Kimball,41.967901,-87.713065,Kimball (Brown Line),False,False,False,True,False,False,False,False,False
+King Drive,41.78013,-87.615546,King Drive (Green Line),False,False,True,False,False,False,False,False,False
+Kostner,41.853751,-87.733258,Kostner (Pink Line),False,False,False,False,False,False,False,True,False
+Lake,41.884809,-87.627813,Lake (Red Line),True,False,False,False,False,False,False,False,False
+Laramie,41.887163,-87.754986,Laramie (Green Line),False,False,True,False,False,False,False,False,False
+LaSalle,41.875568,-87.631722,LaSalle (Blue Line),False,True,False,False,False,False,False,False,False
+LaSalle/Van Buren,41.8768,-87.631739,"LaSalle/Van Buren (Brown, Orange, Purple & Pink Lines)",False,False,False,False,False,True,False,True,True
+Lawrence,41.969139,-87.658493,Lawrence (Red Line),True,False,False,False,False,False,False,False,False
+Linden,42.073153,-87.69073,Linden (Purple Line),False,False,False,False,True,True,False,False,False
+Logan Square,41.929728,-87.708541,Logan Square (Blue Line),False,True,False,False,False,False,False,False,False
+Loyola,42.001073,-87.661061,Loyola (Red Line),True,False,False,False,False,False,False,False,False
+Main,42.033456,-87.679538,Main (Purple Line),False,False,False,False,True,True,False,False,False
+Merchandise Mart,41.888969,-87.633924,Merchandise Mart (Brown & Purple Lines),False,False,False,True,False,True,False,False,False
+Midway,41.78661,-87.737875,Midway (Orange Line),False,False,False,False,False,False,False,False,True
+Monroe,41.880703,-87.629378,Monroe (Blue Line),False,True,False,False,False,False,False,False,False
+Monroe,41.880745,-87.627696,Monroe (Red Line),True,False,False,False,False,False,False,False,False
+Montrose,41.961539,-87.743574,Montrose (Blue Line),False,True,False,False,False,False,False,False,False
+Montrose,41.961756,-87.675047,Montrose (Brown Line),False,False,False,True,False,False,False,False,False
+Morgan,41.885586,-87.652193,Morgan (Green & Pink Lines),False,False,True,False,False,False,False,True,False
+Morse,42.008362,-87.665909,Morse (Red Line),True,False,False,False,False,False,False,False,False
+North/Clybourn,41.910655,-87.649177,North/Clybourn (Red Line),True,False,False,False,False,False,False,False,False
+Noyes,42.058282,-87.683337,Noyes (Purple Line),False,False,False,False,True,True,False,False,False
+Oak Park,41.872108,-87.791602,Oak Park (Blue Line),False,True,False,False,False,False,False,False,False
+Oak Park,41.886988,-87.793783,Oak Park (Green Line),False,False,True,False,False,False,False,False,False
+Oakton-Skokie,42.02624348,-87.74722084,Oakton-Skokie (Yellow Line),False,False,False,False,False,False,True,False,False
+O'Hare,41.97766526,-87.90422307,O'Hare (Blue Line),False,True,False,False,False,False,False,False,False
+Paulina,41.943623,-87.670907,Paulina (Brown Line),False,False,False,True,False,False,False,False,False
+Polk,41.871551,-87.66953,Polk (Pink Line),False,False,False,False,False,False,False,True,False
+Pulaski,41.799756,-87.724493,Pulaski (Orange Line),False,False,False,False,False,False,False,False,True
+Pulaski,41.853732,-87.724311,Pulaski (Pink Line),False,False,False,False,False,False,False,True,False
+Pulaski,41.873797,-87.725663,Pulaski (Blue Line),False,True,False,False,False,False,False,False,False
+Pulaski,41.885412,-87.725404,Pulaski (Green Line),False,False,True,False,False,False,False,False,False
+Quincy/Wells,41.878723,-87.63374,"Quincy/Wells (Brown, Orange, Purple & Pink Lines)",False,False,False,False,False,True,False,True,True
+Racine,41.87592,-87.659458,Racine (Blue Line),False,True,False,False,False,False,False,False,False
+Ridgeland,41.887159,-87.783661,Ridgeland (Green Line),False,False,True,False,False,False,False,False,False
+Rockwell,41.966115,-87.6941,Rockwell (Brown Line),False,False,False,True,False,False,False,False,False
+Roosevelt,41.867405,-87.62659,"Roosevelt (Red, Orange & Green Lines)",False,False,True,False,False,False,False,False,True
+Rosemont,41.983507,-87.859388,Rosemont (Blue Line),False,True,False,False,False,False,False,False,False
+Sedgwick,41.910409,-87.639302,Sedgwick (Brown & Purple Lines),False,False,False,True,False,True,False,False,False
+Sheridan,41.953775,-87.654929,Sheridan (Red Line),True,False,False,False,False,False,False,False,False
+South Boulevard,42.027612,-87.678329,South Boulevard (Purple Line),False,False,False,False,True,True,False,False,False
+Southport,41.943744,-87.663619,Southport (Brown Line),False,False,False,True,False,False,False,False,False
+Sox-35th,41.831191,-87.630636,Sox-35th (Red Line),True,False,False,False,False,False,False,False,False
+State/Lake,41.88574,-87.627835,"State/Lake (Brown, Green, Orange, Pink & Purple Lines)",False,False,True,False,False,True,False,True,True
+Thorndale,41.990259,-87.659076,Thorndale (Red Line),True,False,False,False,False,False,False,False,False
+UIC-Halsted,41.875474,-87.649707,UIC-Halsted (Blue Line),False,True,False,False,False,False,False,False,False
+Washington,41.883164,-87.62944,Washington (Blue Line),False,True,False,False,False,False,False,False,False
+Washington/Wabash,41.88322,-87.626189,"Washington/Wabash (Brown, Green, Orange, Purple & Pink Lines)",False,False,True,False,False,True,False,True,True
+Washington/Wells,41.882695,-87.63378,"Washington/Wells (Brown, Orange, Purple & Pink Lines)",False,False,False,False,False,True,False,True,True
+Wellington,41.936033,-87.653266,Wellington (Brown & Purple Lines),False,False,False,True,False,True,False,False,False
+Western,41.804546,-87.684019,Western (Orange Line),False,False,False,False,False,False,False,False,True
+Western,41.854225,-87.685129,Western (Pink Line),False,False,False,False,False,False,False,True,False
+Western,41.966163,-87.688502,Western (Brown Line),False,False,False,True,False,False,False,False,False
+Western,41.916157,-87.687364,Western (Blue Line - O'Hare Branch),False,True,False,False,False,False,False,False,False
+Western,41.875478,-87.688436,Western (Blue Line - Forest Park Branch),False,True,False,False,False,False,False,False,False
+Wilson,41.964273,-87.657588,Wilson (Red & Purple Lines),False,False,False,False,False,True,False,False,False

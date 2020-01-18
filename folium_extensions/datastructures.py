@@ -2,8 +2,10 @@ import numpy as np
 import pandas as pd
 import geopandas
 from geopandas import GeoDataFrame, GeoSeries
+import geojson
 from geojson import Feature, FeatureCollection
 from shapely.geometry import shape, Point, Polygon
+from scipy.spatial import Voronoi
 from h3 import h3
 import folium
 import seaborn as sns
@@ -38,6 +40,11 @@ class PolygonDataFrame(GeoDataFrame):
 
     def from_boundaries(self, df: pd.DataFrame, boundaries: GeoDataFrame, aggfunc=np.sum):
         return _df_to_boundaries(df, boundaries, aggfunc)
+
+    def from_voronoi(self, df: pd.DataFrame, points: GeoDataFrame, aggfunc=np.sum):
+        polygons = coords_to_voronoi_polygons(points.geometry.x, points.geometry.y)
+        df_voronoi = points.set_geometry(polygons)
+        return _df_to_boundaries(df, df_voronoi, aggfunc)
 
     def to_feature_collection(self):
         """
@@ -162,6 +169,10 @@ def _df_to_boundaries(df: pd.DataFrame, boundaries: GeoDataFrame, aggfunc=np.sum
     assert boundaries.index.name == 'id'
     df = _validate_point_data(df)
 
+    if is_numeric_dtype(boundaries.index.dtype):
+        # have had issues with numeric index when serializing for plotting
+        boundaries.index = boundaries.index.astype('str')
+
     if not isinstance(df, GeoDataFrame):
         df = _df_to_gpdf(df)
     
@@ -271,5 +282,43 @@ def _assign_polygon_index(gpdf: GeoDataFrame, polygons: GeoSeries):
 
     for i in polygons.index:
         gpdf.loc[gpdf.geometry.within(polygons.loc[i]), 'id'] = i
+        # NOTE - I did try the below vectorization and it was 5X slower...
+        # shapely.vectorized.contains(polygons.loc[i], gpdf.geometry.x, gpdf.geometry.y)
    
     return gpdf
+
+
+def coords_to_voronoi_polygons(x, y):
+    """
+    Get voronoi cells of a set of lat/longs
+    Parameters
+    ----------
+    x : array of latitudes
+    y : array of longitudes
+
+    Returns
+    -------
+    polygons  : list of shapely.Polygons
+    """
+
+    vor = Voronoi([i for i in zip(x, y)])
+    
+    polygons = []
+
+    for i in range(len(vor.regions)-1):
+        vertex_list = []
+        point_index = vor.point_region[i]  # the order of vor.regions is NOT the same as input lat/long
+        for x in vor.regions[point_index]:
+            if x == -1:
+                break
+            else:
+                vertex = vor.vertices[x]
+                # vertex = (vertex[1], vertex[0])  # flip the order for geojson???
+                vertex = (vertex[0], vertex[1])
+            vertex_list.append(vertex)
+        if len(vertex_list) >= 3:  # edge cells aren't enclosed
+            polygons.append(Polygon(vertex_list))
+        else:
+            polygons.append(Polygon([]))
+
+    return polygons
