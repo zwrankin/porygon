@@ -1,4 +1,33 @@
+import time
+import folium
+from selenium import webdriver
+from folium.utilities import _tmp_html
 from branca.element import Template, MacroElement
+
+
+def _save_map_to_png(m: folium.Map, filepath='mymap', delay=3):
+  """
+  Saves a screenshot of a folium.Map object as a png.
+  Similar to folium's existing m._to_png but saves to disk. 
+  WARNING - This is a private method because it required a non-essential dependency - 
+  you need to install geckodriver - see README for details. 
+  """
+
+  try:
+    options = webdriver.firefox.options.Options()
+    options.add_argument('--headless')
+    driver = webdriver.Firefox(options=options)
+  except: 
+    raise AssertionError('You need to install geckodriver - see README for details')
+
+  html = m.get_root().render()
+  with _tmp_html(html) as fname:
+      # We need the tempfile to avoid JS security issues.
+      driver.get(f'file:///{fname}')
+      driver.maximize_window()
+      time.sleep(delay)
+      driver.save_screenshot(filepath)
+      driver.quit()
 
 
 def add_h3_legend(m, color_key:dict, title='Legend (draggable!)'):
