@@ -28,7 +28,7 @@ class PorygonDataFrame(GeoDataFrame):
             centroids = self.centroid
             self.centroid_point = [centroids.y.mean(), centroids.x.mean()]  # don't want to overwrite self.centroid attribute
             # Rough logic - seems to work for Chicago but TBD if generalizes at higher/lower scales
-            self.zoom = round(max(centroids.x.quantile(0.95) - centroids.x.quantile(0.05), centroids.y.quantile(0.95) - centroids.y.quantile(0.05)) * 40)
+            self.zoom = round(max(centroids.x.quantile(0.95) - centroids.x.quantile(0.05), centroids.y.quantile(0.95) - centroids.y.quantile(0.05)) * 35)
             # self.map = self._make_base_map()  # may be used later to allowing layering
 
     def from_gpdf(self, gpdf):
@@ -91,7 +91,7 @@ class PorygonDataFrame(GeoDataFrame):
         return m
 
     def to_categorical_map(self, val_col: str, cat_col: str, m=None, color_key=None, nan_fill_color='black', 
-        legend_title='Legend (Draggable!)', **kwargs):
+        legend_title='Legend', **kwargs):
         """
         Make custom folium.GeoJson with categorical observations 
         To add a layer to existing map, provide an instance of folium.Map
