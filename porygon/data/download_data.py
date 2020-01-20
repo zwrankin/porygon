@@ -1,5 +1,8 @@
 import os
 import pandas as pd
+import requests
+import zipfile
+import io
 import json
 from dotenv import find_dotenv, load_dotenv
 from pathlib import Path
@@ -49,7 +52,15 @@ def download_chicago_cta_L_stops():
     df.to_csv(Path(RAW_DATA_DIR, 'chicago_L_stops.csv'), index=False)
     
 
+def download_annual_conc_by_monitor_2019():
+    """Download USA air quality data from https://aqs.epa.gov/aqsweb/airdata/download_files.html"""
+    r = requests.get('https://aqs.epa.gov/aqsweb/airdata/annual_conc_by_monitor_2019.zip')
+    z = zipfile.ZipFile(io.BytesIO(r.content))
+    z.extractall(RAW_DATA_DIR)
+
+
 if __name__ == "__main__":
     download_chicago_traffic_accidents()
     download_chicago_census_tract_boundaries()
     download_chicago_cta_L_stops()
+    download_annual_conc_by_monitor_2019()

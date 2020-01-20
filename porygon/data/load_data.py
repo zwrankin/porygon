@@ -19,3 +19,8 @@ def load_chicago_census_tract_boundaries():
 def load_chicago_L_stops():
     df = pd.read_csv(Path(PROCESSED_DATA_DIR, 'chicago_L_stops.csv'))
     return df
+
+
+def load_air_quality_data():
+    df = pd.read_csv(Path(PROCESSED_DATA_DIR, 'air_quality_data.csv'))
+    return df

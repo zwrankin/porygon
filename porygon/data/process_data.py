@@ -27,6 +27,27 @@ def process_chicago_L_stops():
     df = df[cols]
     df.to_csv(Path(PROCESSED_DATA_DIR, 'chicago_L_stops.csv'), index=False)
 
+
+def process_air_quality_data():
+    df = pd.read_csv(Path(RAW_DATA_DIR, 'annual_conc_by_monitor_2019.csv'))
+    rename_dict = {'Latitude': 'latitude', 
+               'Longitude': 'longitude', 
+               'Year': 'year',
+               'Local Site Name': 'site_name', 
+               'Parameter Name': 'parameter',
+               'Arithmetic Mean': 'val_mean'}
+
+    df = df.rename(columns=rename_dict)
+    df = df.loc[df['Sample Duration'] == "24 HOUR"]
+    df['site_code'] = df['State Code'].astype('str') + df['County Code'].astype('str') + df['Site Num'].astype('str')
+    df.drop_duplicates(subset=['site_code', 'parameter'], inplace=True)
+
+    cols = ['site_code', 'latitude', 'longitude', 'year', 'parameter', 'val_mean']
+    df = df[cols]
+    df.to_csv(Path(PROCESSED_DATA_DIR, 'air_quality_data.csv'), index=False)
+
+
 if __name__ == "__main__":
-    process_chicago_traffic_accidents()
-    process_chicago_L_stops()
+    # process_chicago_traffic_accidents()
+    # process_chicago_L_stops()
+    process_air_quality_data()
