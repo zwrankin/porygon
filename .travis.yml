@@ -5,4 +5,7 @@ python:
 
 install: pip install -e . -r requirements.txt
 
-script: pytest
+script: pytest --cov=porygon
+
+after_success:
+  - codecov
