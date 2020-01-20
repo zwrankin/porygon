@@ -57,11 +57,15 @@ class PorygonDataFrame(GeoDataFrame):
         fc  = FeatureCollection([Feature(id = f['id'], geometry=f['geometry'], properties=f['properties']) for f in self._to_geo()['features']])
         return fc
 
-    def _make_base_map(self):
+    def _make_base_map(self, location=None, zoom_start=None):
         # TODO - should be class attribute 
-        return folium.Map(location=self.centroid_point, zoom_start=self.zoom) 
+        if location is None:
+            location=self.centroid_point
+        if zoom_start is None:
+            zoom_start=self.zoom_start
+        return folium.Map(location=location, zoom_start=zoom_start) 
 
-    def to_choropleth(self, col: str, m=None, fill_color='YlOrRd', **kwargs):
+    def to_choropleth(self, col: str, m=None, location=None, zoom_start=None, fill_color='YlOrRd', **kwargs):
         """
         Make folium.Choropleth map
         To add a layer to existing map, provide an instance of folium.Map
@@ -76,7 +80,7 @@ class PorygonDataFrame(GeoDataFrame):
 
         # TODO - allow layering to self.map 
         if m is None:
-            m = self._make_base_map()
+            m = self._make_base_map(location, zoom_start)
 
         folium.Choropleth(
             geo_data=self.to_feature_collection(),
@@ -90,8 +94,8 @@ class PorygonDataFrame(GeoDataFrame):
 
         return m
 
-    def to_categorical_map(self, val_col: str, cat_col: str, m=None, color_key=None, nan_fill_color='black', 
-        legend_title='Legend', **kwargs):
+    def to_categorical_map(self, val_col: str, cat_col: str, m=None, location=None, zoom_start=None, color_key=None, 
+        nan_fill_color='black', legend_title='Legend', **kwargs):
         """
         Make custom folium.GeoJson with categorical observations 
         To add a layer to existing map, provide an instance of folium.Map
@@ -121,7 +125,7 @@ class PorygonDataFrame(GeoDataFrame):
 
         # TODO - allow layering to self.map 
         if m is None:
-            m = self._make_base_map()
+            m = self._make_base_map(location, zoom_start)
 
         def style_function(feature):
             row = self.loc[feature['id']]
