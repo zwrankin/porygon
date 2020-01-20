@@ -6,3 +6,4 @@ seaborn
 cmake  # required for h3
 h3
 GitPython
+selenium 
