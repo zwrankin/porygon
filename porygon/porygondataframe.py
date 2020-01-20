@@ -28,7 +28,7 @@ class PorygonDataFrame(GeoDataFrame):
             centroids = self.centroid
             self.centroid_point = [centroids.y.mean(), centroids.x.mean()]  # don't want to overwrite self.centroid attribute
             # Rough logic - seems to work for Chicago but TBD if generalizes at higher/lower scales
-            self.zoom = round(max(centroids.x.quantile(0.95) - centroids.x.quantile(0.05), centroids.y.quantile(0.95) - centroids.y.quantile(0.05)) * 35)
+            self.zoom_start = round(max(centroids.x.quantile(0.95) - centroids.x.quantile(0.05), centroids.y.quantile(0.95) - centroids.y.quantile(0.05)) * 35)
             # self.map = self._make_base_map()  # may be used later to allowing layering
 
     def from_gpdf(self, gpdf):
@@ -38,7 +38,7 @@ class PorygonDataFrame(GeoDataFrame):
         return PorygonDataFrame(df) 
 
     def from_h3(self, df, h3_level=8, aggfunc=np.sum):
-        return _df_to_h3(df, h3_level=h3_level, aggfunc=np.sum)
+        return _df_to_h3(df, h3_level=h3_level, aggfunc=aggfunc)
 
     def from_boundaries(self, df: pd.DataFrame, boundaries: GeoDataFrame, aggfunc=np.sum):
         return _df_to_boundaries(df, boundaries, aggfunc)
