@@ -1,4 +1,4 @@
-jupyter
 sodapy
 python-dotenv
 GitPython
+pytest-cov
