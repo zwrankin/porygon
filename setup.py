@@ -2,6 +2,7 @@ from setuptools import find_packages, setup
 
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
+    requirements.reverse  # need to ensure this order is same as requirements.txt
 
 setup(
     name='porygon',
