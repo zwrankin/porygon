@@ -2,6 +2,10 @@ porygon
 ==============================
 <img src="gallery/porygon.png" alt="drawing" width="120"/>
 
+[![Build status](https://travis-ci.org/zwrankin/porygon.svg?branch=master)](https://travis-ci.org/zwrankin)  
+[![codecov](https://codecov.io/gh/zwrankin/porygon/branch/master/graph/badge.svg)](https://codecov.io/gh/zwrankin/porygon)
+
+
 A library for making beautiful maps from geospatial data.  
 - Internally coherent data structures that connect the data manipulation of [`pandas.DataFrame`](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html) & [`geopandas.GeoDataFrame`](http://geopandas.org/data_structures.html#geodataframe) with the plotting library [`folium`](https://python-visualization.github.io/folium/). 
 - Streamlined aggregation of point data to polygons by providing a consistent interface over geospatial tools such as [`h3`](https://uber.github.io/h3/#/), [`shapely`](https://shapely.readthedocs.io/en/stable/index.html), [`scipy.Voronoi`](https://docs.scipy.org/doc/scipy-0.18.1/reference/generated/scipy.spatial.Voronoi.html), and more. 
@@ -31,7 +35,6 @@ cd porygon && python setup.py develop
 ```
 
 Installation notes: 
-- If you are having trouble with the h3 installation, you may need to manually `pip install cmake`.
 - If running notebooks, you will need to `pip install jupyter`. 
 - Some notebooks render the maps as pngs using folium's [`_to_png`](https://github.com/python-visualization/folium/blob/master/folium/folium.py#L296) method. You can run the notebooks with those lines commented out (and save the folium maps to html as normal). Or if you'd like to use the inline png rendering, you will need to install `geckodriver`. You can see download it [here](https://github.com/mozilla/geckodriver/releases) or by `brew install geckodriver`. 
 - Additional dev requirements are specified in `requirements-dev.txt`. 
