@@ -80,13 +80,13 @@ class PorygonDataFrame(GeoDataFrame):
         To add a layer to existing map, provide an instance of folium.Map
         ----------
         color_col : Name of column in dataframe to plot on choropleth
-        scale_col: Name of column in dataframe to scale size of geometries (e.g. cartogram)
+        scale_col : Name of column in dataframe to scale size of geometries (e.g. cartogram)
         m : folium.Map object. If not provided, makes a new map with just the choropleth layer
         Returns
         -------
         folium.Map with added Choropleth layer 
         """
-        assert col in self.columns, f"col {col} not found in dataframe columns - {self.columns.tolist()}"
+        assert color_col in self.columns, f"col {scale_col} not found in dataframe columns - {self.columns.tolist()}"
 
         # TODO - allow layering to self.map 
         if m is None:
@@ -96,7 +96,7 @@ class PorygonDataFrame(GeoDataFrame):
             geo_data=self.to_feature_collection(scale_col),
             name='choropleth',
             data=self.reset_index(), 
-            columns=['id', col],
+            columns=['id', color_col],
             key_on='feature.id',
             fill_color=fill_color,
             **kwargs
@@ -104,7 +104,7 @@ class PorygonDataFrame(GeoDataFrame):
 
         return m
 
-    def to_categorical_map(self, val_col: str, cat_col: str, scale_col=None, m=None, location=None, zoom_start=None, color_key=None, 
+    def to_categorical_map(self, val_col: str, cat_col: str, opacity_col=None, scale_col=None, m=None, location=None, zoom_start=None, color_key=None, 
         nan_fill_color='black', legend_title='Legend', **kwargs):
         """
         Make custom folium.GeoJson with categorical observations 
@@ -112,20 +112,22 @@ class PorygonDataFrame(GeoDataFrame):
         ----------
         val_col : Name of column with values 
         cat_col : Name of column with categorical values 
-        scale_col: Name of column in dataframe to scale size of geometries (e.g. cartogram)
+        opacity_col : Name of column to use for opacity scaling
+        scale_col : Name of column in dataframe to scale size of geometries (e.g. cartogram)
         m : folium.Map object. If not provided, makes a new map with just the categorical map layer
         Returns
         -------
         folium.Map with added layer 
         """
+        data = self.copy()  # do not change by reference
         # TODO - refactor this elsewhere
-        assert val_col in self.columns, f"val_col {val_col} not found in dataframe columns - {self.columns.tolist()}"
-        assert cat_col in self.columns, f"cat_col {cat_col} not found in dataframe columns - {self.columns.tolist()}"
-        assert is_numeric_dtype(self[val_col]), f'{val_col} is not numeric'
-        assert is_string_dtype(self[cat_col]), f'{cat_col} is not numeric'
+        assert val_col in data.columns, f"val_col {val_col} not found in dataframe columns - {data.columns.tolist()}"
+        assert cat_col in data.columns, f"cat_col {cat_col} not found in dataframe columns - {data.columns.tolist()}"
+        assert is_numeric_dtype(data[val_col]), f'{val_col} is not numeric'
+        assert is_string_dtype(data[cat_col]), f'{cat_col} is not numeric'
 
         if color_key is None: 
-            categories = self[cat_col].value_counts().index  # default is sort by frequency
+            categories = data[cat_col].value_counts().index  # default is sort by frequency
             colors = sns.color_palette('deep', 10).as_hex() + sns.color_palette('bright', 10).as_hex()
 
             if len(categories) > len(colors):
@@ -138,13 +140,19 @@ class PorygonDataFrame(GeoDataFrame):
         if m is None:
             m = self._make_base_map(location, zoom_start)
 
+        if opacity_col:
+            data['opacity'] = data[opacity_col] / data[opacity_col].max()
+
         def style_function(feature):
-            row = self.loc[feature['id']]
+            row = data.loc[feature['id']]
             if row[cat_col] in color_key.keys():
                 color = color_key[row[cat_col]] 
             else: 
-                color = nan_fill_color 
-            opacity = 0.7 
+                color = nan_fill_color
+            if opacity_col: 
+                opacity = row['opacity']
+            else: 
+                opacity = 0.7 
             return {
                 'weight': 2,
                 'opacity': opacity,
@@ -154,7 +162,7 @@ class PorygonDataFrame(GeoDataFrame):
             }
 
         folium.GeoJson(
-            self.to_feature_collection(scale_col),
+            data.to_feature_collection(scale_col),
             style_function=style_function,
             tooltip=folium.features.GeoJsonTooltip(
                 fields=[cat_col, val_col],
