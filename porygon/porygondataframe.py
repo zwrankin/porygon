@@ -1,5 +1,6 @@
 import numpy as np 
 import pandas as pd
+import shapely
 import geopandas
 from geopandas import GeoDataFrame, GeoSeries
 import geojson
@@ -48,13 +49,21 @@ class PorygonDataFrame(GeoDataFrame):
         df_voronoi = points.set_geometry(polygons)
         return _df_to_boundaries(df, df_voronoi, aggfunc)
 
-    def to_feature_collection(self):
+    def to_feature_collection(self, scale_col=None):
         """
         Wrapper for GeoDataFrame._to_geo() that returns the Python dict as geojson.FeatureCollection
         The features 'id' values correspond to the 'id' index of the PorygonDataFrame, which is helpful for plotting utilities
+        ----------
+        scale_col : Name of column in dataframe scale geometry area 
         """
         # NOTE - watch out for issues with non-numeric ids, I've seen folium reject them in choropleth. I think the dtypes between geojson 'id' and 'id' col need to match 
-        fc  = FeatureCollection([Feature(id = f['id'], geometry=f['geometry'], properties=f['properties']) for f in self._to_geo()['features']])
+        # self.geometry = self.geometry.apply(lambda x: shapely.affinity.scale(x, xfact=0.5, yfact=0.5))
+        data = self.copy()  # do not scale geometry by reference
+        if scale_col:
+            # Scale linearly by area
+            data['scale'] = np.sqrt(data[scale_col]) / np.sqrt(data[scale_col].max())
+            data.geometry = data.apply(lambda row: shapely.affinity.scale(row['geometry'], xfact=row['scale'], yfact=row['scale']), axis=1) 
+        fc  = FeatureCollection([Feature(id = f['id'], geometry=f['geometry'], properties=f['properties']) for f in data._to_geo()['features']])
         return fc
 
     def _make_base_map(self, location=None, zoom_start=None):
@@ -65,12 +74,13 @@ class PorygonDataFrame(GeoDataFrame):
             zoom_start=self.zoom_start
         return folium.Map(location=location, zoom_start=zoom_start) 
 
-    def to_choropleth(self, col: str, m=None, location=None, zoom_start=None, fill_color='YlOrRd', **kwargs):
+    def to_choropleth(self, color_col: str, scale_col=None, m=None, location=None, zoom_start=None, fill_color='YlOrRd', **kwargs):
         """
         Make folium.Choropleth map
         To add a layer to existing map, provide an instance of folium.Map
         ----------
-        col : Name of column in dataframe to plot
+        color_col : Name of column in dataframe to plot on choropleth
+        scale_col: Name of column in dataframe to scale size of geometries (e.g. cartogram)
         m : folium.Map object. If not provided, makes a new map with just the choropleth layer
         Returns
         -------
@@ -83,7 +93,7 @@ class PorygonDataFrame(GeoDataFrame):
             m = self._make_base_map(location, zoom_start)
 
         folium.Choropleth(
-            geo_data=self.to_feature_collection(),
+            geo_data=self.to_feature_collection(scale_col),
             name='choropleth',
             data=self.reset_index(), 
             columns=['id', col],
@@ -94,7 +104,7 @@ class PorygonDataFrame(GeoDataFrame):
 
         return m
 
-    def to_categorical_map(self, val_col: str, cat_col: str, m=None, location=None, zoom_start=None, color_key=None, 
+    def to_categorical_map(self, val_col: str, cat_col: str, scale_col=None, m=None, location=None, zoom_start=None, color_key=None, 
         nan_fill_color='black', legend_title='Legend', **kwargs):
         """
         Make custom folium.GeoJson with categorical observations 
@@ -102,6 +112,7 @@ class PorygonDataFrame(GeoDataFrame):
         ----------
         val_col : Name of column with values 
         cat_col : Name of column with categorical values 
+        scale_col: Name of column in dataframe to scale size of geometries (e.g. cartogram)
         m : folium.Map object. If not provided, makes a new map with just the categorical map layer
         Returns
         -------
@@ -143,7 +154,7 @@ class PorygonDataFrame(GeoDataFrame):
             }
 
         folium.GeoJson(
-            self.to_feature_collection(),
+            self.to_feature_collection(scale_col),
             style_function=style_function,
             tooltip=folium.features.GeoJsonTooltip(
                 fields=[cat_col, val_col],
