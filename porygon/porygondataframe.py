@@ -119,15 +119,15 @@ class PorygonDataFrame(GeoDataFrame):
         -------
         folium.Map with added layer 
         """
-        data = self.copy()  # do not change by reference
-        # TODO - refactor this elsewhere
-        assert val_col in data.columns, f"val_col {val_col} not found in dataframe columns - {data.columns.tolist()}"
-        assert cat_col in data.columns, f"cat_col {cat_col} not found in dataframe columns - {data.columns.tolist()}"
-        assert is_numeric_dtype(data[val_col]), f'{val_col} is not numeric'
-        assert is_string_dtype(data[cat_col]), f'{cat_col} is not numeric'
+
+        # TODO - resfactor this elsewhere
+        assert val_col in self.columns, f"val_col {val_col} not found in dataframe columns - {self.columns.tolist()}"
+        assert cat_col in self.columns, f"cat_col {cat_col} not found in dataframe columns - {self.columns.tolist()}"
+        assert is_numeric_dtype(self[val_col]), f'{val_col} is not numeric'
+        assert is_string_dtype(self[cat_col]), f'{cat_col} is not numeric'
 
         if color_key is None: 
-            categories = data[cat_col].value_counts().index  # default is sort by frequency
+            categories = self[cat_col].value_counts().index  # default is sort by frequency
             colors = sns.color_palette('deep', 10).as_hex() + sns.color_palette('bright', 10).as_hex()
 
             if len(categories) > len(colors):
@@ -140,11 +140,12 @@ class PorygonDataFrame(GeoDataFrame):
         if m is None:
             m = self._make_base_map(location, zoom_start)
 
+        # TODO - should make a copy, don't adjust by reference. Warning: self.copy() or deepcopy(self) returns a GeoDataFrame
         if opacity_col:
-            data['opacity'] = data[opacity_col] / data[opacity_col].max()
+            self['opacity'] = self[opacity_col] / self[opacity_col].max()
 
         def style_function(feature):
-            row = data.loc[feature['id']]
+            row = self.loc[feature['id']]
             if row[cat_col] in color_key.keys():
                 color = color_key[row[cat_col]] 
             else: 
@@ -162,7 +163,7 @@ class PorygonDataFrame(GeoDataFrame):
             }
 
         folium.GeoJson(
-            data.to_feature_collection(scale_col),
+            self.to_feature_collection(scale_col),
             style_function=style_function,
             tooltip=folium.features.GeoJsonTooltip(
                 fields=[cat_col, val_col],
