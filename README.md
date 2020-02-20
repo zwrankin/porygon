@@ -31,8 +31,10 @@ Until more formal documentation is available, start by reading the [Quickstart j
 ```
 conda create -n porygon python=3.7 pip
 conda activate porygon
-cd porygon && python setup.py develop
+cd porygon
+pip install -e . -r requirements.txt
 ```
+Note: As per [this issue](https://github.com/zwrankin/porygon/issues/19), installation will error if you use `python setup.py develop`
 
 Installation notes: 
 - If running notebooks, you will need to `pip install jupyter`. 
