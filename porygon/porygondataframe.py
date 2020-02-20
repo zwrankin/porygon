@@ -165,8 +165,7 @@ def _df_to_boundaries(df: pd.DataFrame, boundaries: GeoDataFrame, aggfunc=np.sum
     ----------
     df : pd.DataFrame of lat/long data to be aggregated, or GeoDataFrame with valid point geometry
     boundaries : GeoSeries of polygon geometry
-    aggfunc : function or string used to aggregate to polygon
-        For now, all columns will get aggregated with the same aggfunc
+    aggfunc : function, str, list or dict to aggregate numeric cols to polygon as per pd.DataFrame.agg(aggfunc)
 
     Returns
     -------
@@ -190,12 +189,7 @@ def _df_to_boundaries(df: pd.DataFrame, boundaries: GeoDataFrame, aggfunc=np.sum
 
     df = _assign_polygon_index(df, srs)
 
-    df = df.drop(columns='geometry').groupby('id').apply(aggfunc)
-    # Ugh - some functions (e.g. np.sum) keep the groupby col ('id'), others (e.g. np.mean) remove it
-    if 'id' in df.columns: 
-        df = df.drop(columns='id').reset_index()
-    else: 
-        df = df.reset_index()
+    df = df.drop(columns='geometry').groupby('id').agg(aggfunc).reset_index()
     
     gpdf = pd.merge(df.reset_index(), boundaries, on='id') 
     
@@ -210,8 +204,7 @@ def _df_to_h3(df, h3_level=8, aggfunc=np.sum):
     ----------
     df : pd.DataFrame of lat/long data to be aggregated, or GeoDataFrame with valid point geometry
     h3_level : resolution of h3_tiles. Default is arbitrary
-    aggfunc : function or string used to aggregate to h3 tile
-        For now, all columns will get aggregated with the same aggfunc
+    aggfunc : function, str, list or dict to aggregate numeric cols to h3 tile as per pd.DataFrame.agg(aggfunc)
 
     Returns
     -------
@@ -227,12 +220,7 @@ def _df_to_h3(df, h3_level=8, aggfunc=np.sum):
     df['id'] = df.apply(lat_lng_to_h3, args=(h3_level, ), axis=1)
 
     df = df.drop(columns=['latitude', 'longitude'])
-    df = df.groupby('id').apply(aggfunc)  
-    # Ugh - some functions (e.g. np.sum) keep the groupby col ('id'), others (e.g. np.mean) remove it
-    if 'id' in df.columns: 
-        df = df.drop(columns='id').reset_index()
-    else: 
-        df = df.reset_index()
+    df = df.groupby('id').agg(aggfunc).reset_index()  
     
     # Utilty for for h3.h3_to_geo_boundary to return shapely.geometry.Polygon
     h3_to_polygon = lambda h3_address: Polygon(h3.h3_to_geo_boundary(h3_address, geo_json=True)) 
