@@ -9,8 +9,6 @@ from pathlib import Path
 from sodapy import Socrata
 
 from porygon.data import RAW_DATA_DIR, PROCESSED_DATA_DIR
-# RAW_DATA_DIR = Path(Path().parent, 'data/raw')
-# PROCESSED_DATA_DIR = Path(Path().parent, 'porygon/data/datasets')
 
 load_dotenv(find_dotenv())
 
