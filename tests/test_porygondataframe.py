@@ -6,12 +6,13 @@ from geopandas import GeoDataFrame
 
 from porygon import PorygonDataFrame
 from porygon.utils.data import df_to_gpdf
-from porygon.data.config import PROCESSED_DATA_DIR
 from porygon.data import load_chicago_census_tract_boundaries, load_chicago_L_stops
+
+from porygon.data import PROCESSED_DATA_DIR
 
 
 def test_porygondataframe_from_h3():
-    df = pd.read_csv(Path(PROCESSED_DATA_DIR, 'chicago_traffic_accidents.csv'), nrows=1000)
+    df = pd.read_csv(Path(PROCESSED_DATA_DIR, 'chicago_traffic_accidents.csv.gz'), nrows=1000, compression='gzip')
     df['count'] = 1
     h3df = PorygonDataFrame().from_h3(df[['latitude', 'longitude', 'count']], h3_level=8, aggfunc=np.sum)
     h3df['category'] = np.random.choice(['a', 'b', 'c'], len(h3df))
@@ -26,7 +27,7 @@ def test_porygondataframe_from_boundaries():
     names = [tract['namelsad10'] for tract in census_tracts]
     gpdf_census = GeoDataFrame({'geometry': boundaries, 'id': ids, 'census_name': names}).set_index('id')
 
-    df = pd.read_csv(Path(PROCESSED_DATA_DIR, 'chicago_traffic_accidents.csv'), nrows=1000)
+    df = pd.read_csv(Path(PROCESSED_DATA_DIR, 'chicago_traffic_accidents.csv.gz'), nrows=1000, compression='gzip')
     df['count'] = 1
     cdf = PorygonDataFrame().from_boundaries(df[['latitude', 'longitude', 'count']], gpdf_census)
     cdf['category'] = np.random.choice(['a', 'b', 'c'], len(cdf))
@@ -40,7 +41,7 @@ def test_porygondataframe_from_voronoi():
     df_stops.index.name = 'id'
     gpdf = df_to_gpdf(df_stops)
 
-    df = pd.read_csv(Path(PROCESSED_DATA_DIR, 'chicago_traffic_accidents.csv'), nrows=1000)
+    df = pd.read_csv(Path(PROCESSED_DATA_DIR, 'chicago_traffic_accidents.csv.gz'), nrows=1000, compression='gzip')
     df['count'] = 1
     
     pdf = PorygonDataFrame().from_voronoi(df[['latitude', 'longitude', 'count']], gpdf)
