@@ -26,12 +26,8 @@ class PorygonDataFrame(GeoDataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if len(self) > 0:  # if initialized from a constructor, not PorygonDataFrame()
-            # Validation checks on index. These are important for to_feature_collection method to behave properly
-            assert self.index.is_unique, 'PorygonDataFrame requires a unique index'
-            assert type(self.index) != pd.MultiIndex, 'PorygonDataFrame does not support MultiIndex'
-            if is_numeric_dtype(self.index):
-                logging.warning('Converting numeric index to string for json compatability')
-                self.index = self.index.astype('str')
+            self._validate_index()
+            self._validate_geometry()
 
             centroids = self.centroid
             self.centroid_point = [centroids.y.mean(), centroids.x.mean()]  # don't want to overwrite self.centroid attribute
@@ -39,8 +35,18 @@ class PorygonDataFrame(GeoDataFrame):
             self.zoom_start = round(max(centroids.x.quantile(0.95) - centroids.x.quantile(0.05), centroids.y.quantile(0.95) - centroids.y.quantile(0.05)) * 35)
             # self.map = self._make_base_map()  # may be used later to allowing layering
 
+    def _validate_index(self): 
+        """Validate the PorygonDataFrame index will behave when used with to_feature_collection and plotting"""
+        assert self.index.is_unique, 'PorygonDataFrame requires a unique index'
+        assert type(self.index) != pd.MultiIndex, 'PorygonDataFrame does not support MultiIndex'
+        if is_numeric_dtype(self.index):
+            logging.warning('Converting numeric index to string for json compatability')
+            self.index = self.index.astype('str')
+
+    def _validate_geometry(self):
+        assert all(self.geometry.geom_type.isin(["MultiPolygon", "Polygon"])), 'PorygonDataFrame only supports Polygon and MultiPolygon'
+
     def from_gpdf(self, gpdf):
-        # TODO - validate that geometry is polygon 
         # TODO - isn't this constructor superfluous, given that it functions the same as __init___ ? Dunno if this explicit constructor is helpful or confusing
         assert isinstance(gpdf, GeoDataFrame)
         return PorygonDataFrame(df) 

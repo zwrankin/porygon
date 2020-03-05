@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from pathlib import Path
-from shapely.geometry import shape
+from shapely.geometry import shape, Point
 from geopandas import GeoDataFrame
 import pytest
 
@@ -70,3 +70,8 @@ def test_porygon_index():
 
     with pytest.warns(Warning):
         pgdf = PorygonDataFrame(gpdf.set_index(['int_index']))
+
+def test_porygon_geometry():
+    gpdf = GeoDataFrame({'geometry': [Point(0,0)]})
+    with pytest.raises(AssertionError):
+        pgdf = PorygonDataFrame(gpdf)
