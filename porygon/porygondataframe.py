@@ -173,7 +173,6 @@ class PorygonDataFrame(GeoDataFrame):
 def _df_to_boundaries(df: pd.DataFrame, boundaries: GeoDataFrame, aggfunc=np.sum):
     """
     Aggreggates point data to the corresponding polygon boundaries 
-    TODO - make more flexible in terms of boundaries.index allowed
     Parameters
     ----------
     df : pd.DataFrame of lat/long data to be aggregated, or GeoDataFrame with valid point geometry
@@ -184,17 +183,18 @@ def _df_to_boundaries(df: pd.DataFrame, boundaries: GeoDataFrame, aggfunc=np.sum
     -------
     PorygonDataFrame of the dataframe aggregated to polygon, with index 'id' of the boundaries's 'id' index
     """
-
-    assert boundaries.index.name == 'id'
+    # Validate df
     df = _validate_point_data(df)
-
-    if is_numeric_dtype(boundaries.index.dtype):
-        # have had issues with numeric index when serializing for plotting
-        boundaries.index = boundaries.index.astype('str')
-
     if not isinstance(df, GeoDataFrame):
         df = df_to_gpdf(df)
-    
+
+    # Validate boundaries
+    assert boundaries.index.is_unique, 'PorygonDataFrame requires a unique index'
+    assert type(boundaries.index) != pd.MultiIndex, 'PorygonDataFrame does not support MultiIndex'
+    if boundaries.index.name != 'id':
+        logging.warning(f'Renaming boundary index from {boundaries.index.name} to "id"')
+        boundaries.index.name = 'id'
+
     if isinstance(boundaries, GeoSeries):
         srs = boundaries.copy()
     else: 
