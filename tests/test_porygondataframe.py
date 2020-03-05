@@ -65,3 +65,6 @@ def test_porygon_index():
     
     with pytest.raises(AssertionError):
         pgdf = PorygonDataFrame(gpdf.set_index('dupe_index'))
+
+    with pytest.raises(AssertionError):
+        pgdf = PorygonDataFrame(gpdf.set_index(['int_index', 'census_name']))

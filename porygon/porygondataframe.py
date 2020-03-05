@@ -25,7 +25,9 @@ class PorygonDataFrame(GeoDataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if len(self) > 0:  # if initialized from a constructor, not PorygonDataFrame()
+            # Validation checks on index. These are important for to_feature_collection method to behave properly
             assert self.index.is_unique, 'PorygonDataFrame requires a unique index'
+            assert type(self.index) != pd.MultiIndex, 'PorygonDataFrame does not support MultiIndex'
 
             centroids = self.centroid
             self.centroid_point = [centroids.y.mean(), centroids.x.mean()]  # don't want to overwrite self.centroid attribute
