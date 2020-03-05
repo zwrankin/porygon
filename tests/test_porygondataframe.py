@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from pathlib import Path
-from shapely.geometry import shape, Point
+from shapely.geometry import shape, Point, Polygon, MultiPolygon
 from geopandas import GeoDataFrame
 import pytest
 
@@ -75,3 +75,9 @@ def test_porygon_geometry():
     gpdf = GeoDataFrame({'geometry': [Point(0,0)]})
     with pytest.raises(AssertionError):
         pgdf = PorygonDataFrame(gpdf)
+
+    # should be able to handle mixed shapes
+    box1 = [(0,0), (0,1), (1,1), (1,0)]
+    box2 = [(2,2), (2,3), (3,3), (3,2)]
+    gpdf = GeoDataFrame({'geometry': [Polygon(box1), MultiPolygon([Polygon(box1), Polygon(box2)])]})
+    pgdf = PorygonDataFrame(gpdf)
