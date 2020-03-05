@@ -49,7 +49,7 @@ class PorygonDataFrame(GeoDataFrame):
     def from_gpdf(self, gpdf):
         # TODO - isn't this constructor superfluous, given that it functions the same as __init___ ? Dunno if this explicit constructor is helpful or confusing
         assert isinstance(gpdf, GeoDataFrame)
-        return PorygonDataFrame(df) 
+        return PorygonDataFrame(gpdf) 
 
     def from_h3(self, df, h3_level=8, aggfunc=np.sum):
         return _df_to_h3(df, h3_level=h3_level, aggfunc=aggfunc)
