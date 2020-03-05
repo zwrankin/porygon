@@ -3,6 +3,7 @@ import numpy as np
 from pathlib import Path
 from shapely.geometry import shape
 from geopandas import GeoDataFrame
+import pytest
 
 from porygon import PorygonDataFrame
 from porygon.utils.data import df_to_gpdf
@@ -49,3 +50,18 @@ def test_porygondataframe_from_voronoi():
 
     m = pdf.to_choropleth('count')
     m = pdf.to_categorical_map('count', 'category')
+
+
+def test_porygon_index():
+
+    census_tracts = load_chicago_census_tract_boundaries()
+    boundaries = [shape(tract['the_geom']) for tract in census_tracts]
+    ids = [tract['geoid10'] for tract in census_tracts]
+    names = [tract['namelsad10'] for tract in census_tracts]
+    int_index = [i for i in range(0, len(census_tracts))]
+    dup_names =['dupe_name' for i in range(0, len(census_tracts))] 
+    gpdf = GeoDataFrame({'geometry': boundaries, 'id': ids, 'census_name': names, 
+                         'dupe_index': dup_names, 'int_index': int_index})
+    
+    with pytest.raises(AssertionError):
+        pgdf = PorygonDataFrame(gpdf.set_index('dupe_index'))

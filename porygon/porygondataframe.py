@@ -25,6 +25,8 @@ class PorygonDataFrame(GeoDataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if len(self) > 0:  # if initialized from a constructor, not PorygonDataFrame()
+            assert self.index.is_unique, 'PorygonDataFrame requires a unique index'
+
             centroids = self.centroid
             self.centroid_point = [centroids.y.mean(), centroids.x.mean()]  # don't want to overwrite self.centroid attribute
             # Rough logic - seems to work for Chicago but TBD if generalizes at higher/lower scales
