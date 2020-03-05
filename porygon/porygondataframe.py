@@ -67,7 +67,6 @@ class PorygonDataFrame(GeoDataFrame):
         Wrapper for GeoDataFrame._to_geo() that returns the Python dict as geojson.FeatureCollection
         The features 'id' values correspond to the 'id' index of the PorygonDataFrame, which is helpful for plotting utilities
         """
-        # NOTE - watch out for issues with non-numeric ids, I've seen folium reject them in choropleth. I think the dtypes between geojson 'id' and 'id' col need to match 
         fc  = FeatureCollection([Feature(id = f['id'], geometry=f['geometry'], properties=f['properties']) for f in self._to_geo()['features']])
         return fc
 
@@ -125,7 +124,7 @@ class PorygonDataFrame(GeoDataFrame):
         assert val_col in self.columns, f"val_col {val_col} not found in dataframe columns - {self.columns.tolist()}"
         assert cat_col in self.columns, f"cat_col {cat_col} not found in dataframe columns - {self.columns.tolist()}"
         assert is_numeric_dtype(self[val_col]), f'{val_col} is not numeric'
-        assert is_string_dtype(self[cat_col]), f'{cat_col} is not numeric'
+        assert is_string_dtype(self[cat_col]), f'{cat_col} is not string'
 
         if color_key is None: 
             categories = self[cat_col].value_counts().index  # default is sort by frequency
