@@ -1,12 +1,12 @@
 import pandas as pd
 import numpy as np
 from pathlib import Path
-from shapely.geometry import shape, Point, Polygon, MultiPolygon
+from shapely.geometry import shape, Point, Polygon, MultiPolygon, MultiPoint
 from geopandas import GeoDataFrame
 import pytest
 
 from porygon import PorygonDataFrame
-from porygon.utils.data import df_to_gpdf
+from porygon.utils.data import df_to_gpdf, _validate_point_data
 from porygon.data import load_chicago_census_tract_boundaries, load_chicago_L_stops
 
 from porygon.data import PROCESSED_DATA_DIR
@@ -81,3 +81,10 @@ def test_porygon_geometry():
     box2 = [(2,2), (2,3), (3,3), (3,2)]
     gpdf = GeoDataFrame({'geometry': [Polygon(box1), MultiPolygon([Polygon(box1), Polygon(box2)])]})
     pgdf = PorygonDataFrame(gpdf)
+
+def test_point_geometry():
+    p1 = (0,0)
+    p2 = (1,1)
+    gpdf = GeoDataFrame({'geometry': [MultiPoint([p1,p2])]})
+    with pytest.raises(AssertionError):
+        _validate_point_data(GeoDataFrame({'geometry': [MultiPoint([p1,p2])]}))
