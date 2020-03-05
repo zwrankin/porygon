@@ -9,6 +9,7 @@ from h3 import h3
 import folium
 import seaborn as sns
 from pandas.api.types import is_string_dtype, is_numeric_dtype
+import logging
 
 from porygon.utils import _validate_point_data, df_to_gpdf, gpdf_to_latlong_df
 from porygon.utils import coords_to_voronoi_polygons
@@ -28,6 +29,9 @@ class PorygonDataFrame(GeoDataFrame):
             # Validation checks on index. These are important for to_feature_collection method to behave properly
             assert self.index.is_unique, 'PorygonDataFrame requires a unique index'
             assert type(self.index) != pd.MultiIndex, 'PorygonDataFrame does not support MultiIndex'
+            if is_numeric_dtype(self.index):
+                logging.warning('Converting numeric index to string for json compatability')
+                self.index = self.index.astype('str')
 
             centroids = self.centroid
             self.centroid_point = [centroids.y.mean(), centroids.x.mean()]  # don't want to overwrite self.centroid attribute

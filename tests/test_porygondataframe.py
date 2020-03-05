@@ -53,7 +53,6 @@ def test_porygondataframe_from_voronoi():
 
 
 def test_porygon_index():
-
     census_tracts = load_chicago_census_tract_boundaries()
     boundaries = [shape(tract['the_geom']) for tract in census_tracts]
     ids = [tract['geoid10'] for tract in census_tracts]
@@ -68,3 +67,6 @@ def test_porygon_index():
 
     with pytest.raises(AssertionError):
         pgdf = PorygonDataFrame(gpdf.set_index(['int_index', 'census_name']))
+
+    with pytest.warns(Warning):
+        pgdf = PorygonDataFrame(gpdf.set_index(['int_index']))
