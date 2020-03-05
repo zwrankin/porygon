@@ -256,9 +256,26 @@ def _assign_polygon_index(gpdf: GeoDataFrame, polygons: GeoSeries):
     gpdf  : GeoDataFrame with additional column 'id' which corresponds to the index of the polygon containing the point geometry
     """
 
+    # Here is the simple but slow way to do it
+    # for i in polygons.index:
+    #     gpdf.loc[gpdf.geometry.within(polygons.loc[i]), 'id'] = i
+    #     # NOTE - I did try the below vectorization and it was 5X slower...
+    #     # shapely.vectorized.contains(polygons.loc[i], gpdf.geometry.x, gpdf.geometry.y)
+
+    # Here is the sloppier way that is ~10X as fast for big data (dunno performance on smaller datasets)
+    centroid_x = gpdf.geometry.centroid.x 
+    centroid_y = gpdf.geometry.centroid.y
     for i in polygons.index:
-        gpdf.loc[gpdf.geometry.within(polygons.loc[i]), 'id'] = i
-        # NOTE - I did try the below vectorization and it was 5X slower...
-        # shapely.vectorized.contains(polygons.loc[i], gpdf.geometry.x, gpdf.geometry.y)
+        polygon = polygons.loc[i]
+        if polygon.is_empty:
+            continue
+        else: 
+            x_min, y_min, x_max, y_max = polygon.bounds
+            rough_idx = (centroid_x.between(x_min, x_max)) & (centroid_y.between(y_min, y_max))
+            if rough_idx.sum() == 0: 
+                continue 
+            else: 
+                idx = gpdf.loc[rough_idx].loc[gpdf.loc[rough_idx].geometry.within(polygon)].index
+                gpdf.loc[idx, 'id'] = i
    
     return gpdf
