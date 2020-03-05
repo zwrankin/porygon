@@ -10,8 +10,7 @@ def _validate_point_data(df: pd.DataFrame):
     df : pd.DataFrame with latitude & longitude columns, or GeoDataFrame with valid point geometry
     """
     if isinstance(df, GeoDataFrame):
-        # TODO - validate that index contains alls points (not polygons)
-        print('using unvalidated GeoDataFrame')
+        assert all(df.geometry.geom_type == "Point"), f'Only Point Data supported - data contains {df.geometry.type.unique().tolist()}'
     elif isinstance(df, pd.DataFrame): 
         assert all(c in df.columns for c in ['latitude', 'longitude']), 'latitude and longitude not found in columns'
         # TODO - throw warning if any missingness

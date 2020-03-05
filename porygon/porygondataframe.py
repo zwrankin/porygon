@@ -9,6 +9,7 @@ from h3 import h3
 import folium
 import seaborn as sns
 from pandas.api.types import is_string_dtype, is_numeric_dtype
+import logging
 
 from porygon.utils import _validate_point_data, df_to_gpdf, gpdf_to_latlong_df
 from porygon.utils import coords_to_voronoi_polygons
@@ -25,17 +26,30 @@ class PorygonDataFrame(GeoDataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if len(self) > 0:  # if initialized from a constructor, not PorygonDataFrame()
+            self._validate_index()
+            self._validate_geometry()
+
             centroids = self.centroid
             self.centroid_point = [centroids.y.mean(), centroids.x.mean()]  # don't want to overwrite self.centroid attribute
             # Rough logic - seems to work for Chicago but TBD if generalizes at higher/lower scales
             self.zoom_start = round(max(centroids.x.quantile(0.95) - centroids.x.quantile(0.05), centroids.y.quantile(0.95) - centroids.y.quantile(0.05)) * 35)
             # self.map = self._make_base_map()  # may be used later to allowing layering
 
+    def _validate_index(self): 
+        """Validate the PorygonDataFrame index will behave when used with to_feature_collection and plotting"""
+        assert self.index.is_unique, 'PorygonDataFrame requires a unique index'
+        assert type(self.index) != pd.MultiIndex, 'PorygonDataFrame does not support MultiIndex'
+        if is_numeric_dtype(self.index):
+            logging.warning('Converting numeric index to string for json compatability')
+            self.index = self.index.astype('str')
+
+    def _validate_geometry(self):
+        assert all(self.geometry.geom_type.isin(["MultiPolygon", "Polygon"])), 'PorygonDataFrame only supports Polygon and MultiPolygon'
+
     def from_gpdf(self, gpdf):
-        # TODO - validate that geometry is polygon 
         # TODO - isn't this constructor superfluous, given that it functions the same as __init___ ? Dunno if this explicit constructor is helpful or confusing
         assert isinstance(gpdf, GeoDataFrame)
-        return PorygonDataFrame(df) 
+        return PorygonDataFrame(gpdf) 
 
     def from_h3(self, df, h3_level=8, aggfunc=np.sum):
         return _df_to_h3(df, h3_level=h3_level, aggfunc=aggfunc)
@@ -53,7 +67,6 @@ class PorygonDataFrame(GeoDataFrame):
         Wrapper for GeoDataFrame._to_geo() that returns the Python dict as geojson.FeatureCollection
         The features 'id' values correspond to the 'id' index of the PorygonDataFrame, which is helpful for plotting utilities
         """
-        # NOTE - watch out for issues with non-numeric ids, I've seen folium reject them in choropleth. I think the dtypes between geojson 'id' and 'id' col need to match 
         fc  = FeatureCollection([Feature(id = f['id'], geometry=f['geometry'], properties=f['properties']) for f in self._to_geo()['features']])
         return fc
 
@@ -111,7 +124,7 @@ class PorygonDataFrame(GeoDataFrame):
         assert val_col in self.columns, f"val_col {val_col} not found in dataframe columns - {self.columns.tolist()}"
         assert cat_col in self.columns, f"cat_col {cat_col} not found in dataframe columns - {self.columns.tolist()}"
         assert is_numeric_dtype(self[val_col]), f'{val_col} is not numeric'
-        assert is_string_dtype(self[cat_col]), f'{cat_col} is not numeric'
+        assert is_string_dtype(self[cat_col]), f'{cat_col} is not string'
 
         if color_key is None: 
             categories = self[cat_col].value_counts().index  # default is sort by frequency
@@ -160,7 +173,6 @@ class PorygonDataFrame(GeoDataFrame):
 def _df_to_boundaries(df: pd.DataFrame, boundaries: GeoDataFrame, aggfunc=np.sum):
     """
     Aggreggates point data to the corresponding polygon boundaries 
-    TODO - make more flexible in terms of boundaries.index allowed
     Parameters
     ----------
     df : pd.DataFrame of lat/long data to be aggregated, or GeoDataFrame with valid point geometry
@@ -171,17 +183,18 @@ def _df_to_boundaries(df: pd.DataFrame, boundaries: GeoDataFrame, aggfunc=np.sum
     -------
     PorygonDataFrame of the dataframe aggregated to polygon, with index 'id' of the boundaries's 'id' index
     """
-
-    assert boundaries.index.name == 'id'
+    # Validate df
     df = _validate_point_data(df)
-
-    if is_numeric_dtype(boundaries.index.dtype):
-        # have had issues with numeric index when serializing for plotting
-        boundaries.index = boundaries.index.astype('str')
-
     if not isinstance(df, GeoDataFrame):
         df = df_to_gpdf(df)
-    
+
+    # Validate boundaries
+    assert boundaries.index.is_unique, 'PorygonDataFrame requires a unique index'
+    assert type(boundaries.index) != pd.MultiIndex, 'PorygonDataFrame does not support MultiIndex'
+    if boundaries.index.name != 'id':
+        logging.warning(f'Renaming boundary index from {boundaries.index.name} to "id"')
+        boundaries.index.name = 'id'
+
     if isinstance(boundaries, GeoSeries):
         srs = boundaries.copy()
     else: 
